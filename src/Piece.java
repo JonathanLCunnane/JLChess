@@ -1,7 +1,10 @@
+import java.awt.image.BufferedImage;
+
 public class Piece {
     boolean isWhite;
     int type;
     Character pieceChar;
+    BufferedImage piecePNG;
     Piece(int pieceType, boolean white)
     {
         isWhite = white;
@@ -30,6 +33,23 @@ public class Piece {
             case PieceType.ROOK -> pieceChar = 'R';
             case PieceType.QUEEN -> pieceChar = 'Q';
             case PieceType.KING -> pieceChar = 'K';
+        }
+        if (pieceChar != null)
+        {
+            if (isWhite)
+            {
+                piecePNG = ImageGetter.tryGetImage(
+                        String.format("/img/white_%c.png", pieceChar),
+                        getClass()
+                );
+            }
+            else
+            {
+                piecePNG = ImageGetter.tryGetImage(
+                        String.format("/img/black_%c.png", pieceChar),
+                        getClass()
+                );
+            }
         }
     }
 }
