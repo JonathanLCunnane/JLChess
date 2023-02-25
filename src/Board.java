@@ -59,13 +59,15 @@ public class Board {
                                 if (row > 1 && currPiece.moveCount == 0 && board[row - 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row - 2, column});
                             }
                             // Captures
-                            if (row > 0 && column > 0 && !board[row - 1][column - 1].isWhite)
+                            if (row > 0 && column > 0)
                             {
-                                currPossibleMoves.add(new int[] {row - 1, column - 1});
+                                if (!board[row - 1][column - 1].isWhite) currPossibleMoves.add(new int[] {row - 1, column - 1});
+                                captureMap[row - 1][column - 1] = currPiece;
                             }
-                            if (row > 0 && column < 7 && !board[row - 1][column + 1].isWhite)
+                            if (row > 0 && column < 7)
                             {
-                                currPossibleMoves.add(new int[] {row - 1, column + 1});
+                                if (!board[row - 1][column + 1].isWhite) currPossibleMoves.add(new int[] {row - 1, column + 1});
+                                captureMap[row - 1][column + 1] = currPiece;
                             }
                             // En passant
                             if (column > 0)
@@ -94,13 +96,15 @@ public class Board {
                                 if (row < 6 && currPiece.moveCount == 0 && board[row + 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row + 2, column});
                             }
                             // Captures
-                            if (row < 7 && column > 0 && board[row + 1][column - 1].isWhite && board[row + 1][column - 1].type != PieceType.NONE)
+                            if (row < 7 && column > 0)
                             {
-                                currPossibleMoves.add(new int[] {row + 1, column - 1});
+                                if (board[row + 1][column - 1].type != PieceType.NONE  && board[row + 1][column - 1].isWhite) currPossibleMoves.add(new int[] {row + 1, column - 1});
+                                captureMap[row + 1][column - 1] = currPiece;
                             }
-                            if (row < 7 && column < 7 && board[row + 1][column + 1].isWhite && board[row + 1][column + 1].type != PieceType.NONE)
+                            if (row < 7 && column < 7)
                             {
-                                currPossibleMoves.add(new int[] {row + 1, column + 1});
+                                if (board[row + 1][column + 1].type != PieceType.NONE && board[row + 1][column + 1].isWhite) currPossibleMoves.add(new int[] {row + 1, column + 1});
+                                captureMap[row + 1][column + 1] = currPiece;
                             }
                             // En passant
                             if (column > 0)
