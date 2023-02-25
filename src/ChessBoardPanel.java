@@ -7,10 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ChessBoardPanel extends JPanel {
-    private Integer[] clickIndicatorLocation = {null, null};
     private final int boardSize = 512;
     private final int marginSize = 16;
+    private Integer[] clickIndicatorLocation = {null, null};
+    boolean captureMapOn = false;
     Board chessBoard;
+    BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
 
     ChessBoardPanel(Board board)
     {
@@ -76,7 +78,17 @@ public class ChessBoardPanel extends JPanel {
         });
     }
 
-    BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
+   public void showCaptureMap()
+   {
+       captureMapOn = true;
+       paintComponent(getGraphics());
+   }
+
+   public void hideCaptureMap()
+   {
+       captureMapOn = false;
+       paintComponent(getGraphics());
+   }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -94,7 +106,15 @@ public class ChessBoardPanel extends JPanel {
         if (chessBoard != null)
         {
             drawPieces(g, extraSideMargin, extraTopMargin);
+
+            // Draw capture map
+            if (chessBoard.captureMap != null && captureMapOn)
+            {
+                drawCaptureMap(g, extraSideMargin, extraTopMargin);
+            }
         }
+
+
 
         if (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null)
         {
@@ -131,7 +151,6 @@ public class ChessBoardPanel extends JPanel {
 
     private void drawPieces(Graphics g, int extraSideMargin, int extraTopMargin)
     {
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         for (int row = 0; row < chessBoard.board.length; row++)
         {
             for (int column = 0; column < chessBoard.board[row].length; column++)
@@ -144,6 +163,30 @@ public class ChessBoardPanel extends JPanel {
                             marginSize + extraSideMargin + (column * 64) + 1,
                             marginSize + extraTopMargin + (row * 64) + 1,
                             null
+                    );
+                }
+            }
+        }
+    }
+
+    private void drawCaptureMap(Graphics g, int extraSideMargin, int extraTopMargin)
+    {
+        Graphics2D g2 = (Graphics2D) g;
+        Color captureMapColour = Color.YELLOW;
+        captureMapColour = new Color(captureMapColour.getRed()/255F, captureMapColour.getGreen()/255F, captureMapColour.getBlue()/255F, 0.2F);
+        g2.setColor(captureMapColour);
+        for (int row = 0; row < chessBoard.board.length; row++)
+        {
+            for (int column = 0; column < chessBoard.board[row].length; column++)
+            {
+                Piece currPiece = chessBoard.captureMap[row][column];
+                if (currPiece.type != PieceType.NONE)
+                {
+                    g.fillRect(
+                            marginSize + extraSideMargin + (column * 64),
+                            marginSize + extraTopMargin + (row * 64),
+                            64,
+                            64
                     );
                 }
             }
