@@ -2,6 +2,7 @@ import java.awt.image.BufferedImage;
 
 public class Piece {
     boolean isWhite;
+    int moveCount;
     int type;
     Character pieceChar;
     BufferedImage piecePNG;
@@ -9,6 +10,7 @@ public class Piece {
     {
         isWhite = white;
         type = pieceType;
+        moveCount = 0;
         configurePiece();
     }
     Piece(int pieceType)
@@ -20,6 +22,7 @@ public class Piece {
         type = PieceType.NONE;
         isWhite = true;
         pieceChar = null;
+        moveCount = 0;
     }
 
     private void configurePiece()
