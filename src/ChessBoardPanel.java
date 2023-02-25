@@ -1,16 +1,13 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 
 public class ChessBoardPanel extends JPanel {
+    private Integer[] clickIndicatorLocation = {null, null};
     private final int boardSize = 512;
     private final int marginSize = 16;
-    private Integer[] clickIndicatorLocation = {null, null};
     Board chessBoard;
 
     ChessBoardPanel(Board board)
@@ -64,7 +61,7 @@ public class ChessBoardPanel extends JPanel {
         });
     }
 
-    BufferedImage boardImage = tryGetImage("/board.png");
+    BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -78,6 +75,12 @@ public class ChessBoardPanel extends JPanel {
 
         g.drawImage(boardImage, marginSize + extraSideMargin, marginSize + extraTopMargin, null);
 
+        // Draw pieces
+        if (chessBoard != null)
+        {
+            drawPieces(g, extraSideMargin, extraTopMargin);
+        }
+
         // Draw click indicator
         if (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null)
         {
@@ -88,12 +91,6 @@ public class ChessBoardPanel extends JPanel {
                     16,
                     16
             );
-        }
-
-        // Draw pieces
-        if (chessBoard != null)
-        {
-            drawPieces(g, extraSideMargin, extraTopMargin);
         }
     }
 
@@ -107,37 +104,14 @@ public class ChessBoardPanel extends JPanel {
                 Piece currPiece = chessBoard.board[row][column];
                 if (currPiece.type != PieceType.NONE)
                 {
-                    if (currPiece.isWhite)
-                    {
-                        g.setColor(Color.MAGENTA);
-                    }
-                    else
-                    {
-                        g.setColor(Color.ORANGE);
-                    }
-                    g.drawString(
-                            currPiece.pieceChar.toString(),
-                            marginSize + extraSideMargin + (column * 64) + 20,
-                            marginSize + extraTopMargin + (row * 64) + 20
+                    g.drawImage(
+                            currPiece.piecePNG,
+                            marginSize + extraSideMargin + (column * 64) + 1,
+                            marginSize + extraTopMargin + (row * 64) + 1,
+                            null
                     );
                 }
             }
         }
-    }
-
-    private BufferedImage tryGetImage(String path)
-    {
-        BufferedImage img = null;
-        try
-        {
-            URL url = getClass().getResource(path);
-            if (url == null) { throw new NullPointerException("Resource is null."); }
-            img = ImageIO.read(url);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return img;
     }
 }

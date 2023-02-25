@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Added a click indicator to indicate the currently selected cell.">
-      <change afterPath="$PROJECT_DIR$/src/Board.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Piece.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceType.java" afterDir="false" />
+    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Moved the image getter method from ChessBoardPanel to a new ImageGetter class.">
+      <change afterPath="$PROJECT_DIR$/src/ImageGetter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ChessBoardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChessBoardPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +56,12 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\jonat\OneDrive\IdeaProjects\JLChess\src\img" />
+      <recent name="C:\Users\jonat\OneDrive\IdeaProjects\JLChess\src" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -99,7 +102,28 @@
       <option name="project" value="LOCAL" />
       <updated>1677252460346</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added a skeleton for the piece and board.">
+      <created>1677326703062</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1677326703062</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added piece PNGs.">
+      <created>1677329546527</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1677329546527</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added a piecePNG instance variable to the Piece class.">
+      <created>1677329591070</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1677329591070</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -111,6 +135,10 @@
     <MESSAGE value="Board added." />
     <MESSAGE value="Added workspace.xml to gitignore." />
     <MESSAGE value="Added a click indicator to indicate the currently selected cell." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a click indicator to indicate the currently selected cell." />
+    <MESSAGE value="Added a skeleton for the piece and board." />
+    <MESSAGE value="Added piece PNGs." />
+    <MESSAGE value="Added a piecePNG instance variable to the Piece class." />
+    <MESSAGE value="Moved the image getter method from ChessBoardPanel to a new ImageGetter class." />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved the image getter method from ChessBoardPanel to a new ImageGetter class." />
   </component>
 </project>
