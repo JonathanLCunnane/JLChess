@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 
 public class ChessBoardPanel extends JPanel {
@@ -19,6 +20,10 @@ public class ChessBoardPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
 
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
                 int extraTopMargin = (getHeight() - boardSize)/2;
                 int extraSideMargin = (getWidth() - boardSize)/2;
                 int xBoard = mouseEvent.getX() - extraSideMargin;
@@ -37,17 +42,26 @@ public class ChessBoardPanel extends JPanel {
                     clickIndicatorLocation[0] = null;
                     clickIndicatorLocation[1] = null;
                 }
-                paintComponent(getGraphics());
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-
             }
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
+                Integer[] newClickIndicatorLocation = new Integer[] {null, null};
 
+                int extraTopMargin = (getHeight() - boardSize)/2;
+                int extraSideMargin = (getWidth() - boardSize)/2;
+                int xBoard = mouseEvent.getX() - extraSideMargin;
+                int yBoard = mouseEvent.getY() - extraTopMargin;
+
+                int xIdx = xBoard / 64;
+                int yIdx = yBoard / 64;
+
+                if ((xIdx >= 0 && xIdx < 8) && (yIdx >= 0 && yIdx < 8))
+                {
+                    newClickIndicatorLocation[0] = xIdx;
+                    newClickIndicatorLocation[1] = yIdx;
+                }
+                if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation)) paintComponent(getGraphics());
             }
 
             @Override
