@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class ChessBoardPanel extends JPanel {
     private Integer[] clickIndicatorLocation = {null, null};
@@ -81,16 +82,36 @@ public class ChessBoardPanel extends JPanel {
             drawPieces(g, extraSideMargin, extraTopMargin);
         }
 
-        // Draw click indicator
         if (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null)
         {
-            g.setColor(Color.BLUE);
-            g.fillRect(
+            // Draw click indicator
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(3));
+            g2.setColor(Color.BLUE);
+            g2.drawArc(
                     marginSize + extraSideMargin + 24 + (clickIndicatorLocation[0] * 64),
                     marginSize + extraTopMargin + 24 + (clickIndicatorLocation[1] * 64),
                     16,
-                    16
+                    16,
+                    0,
+                    360
             );
+
+            // Draw move indicator(s)
+            Piece currPiece = chessBoard.board[clickIndicatorLocation[1]][clickIndicatorLocation[0]];
+            List<int[]> moves = chessBoard.possibleMoves.get(currPiece);
+            g2.setColor(Color.RED);
+            for (int[] move: moves)
+            {
+                g2.drawArc(
+                        marginSize + extraSideMargin + 24 + (move[1] * 64),
+                        marginSize + extraTopMargin + 24 + (move[0] * 64),
+                        16,
+                        16,
+                        0,
+                        360
+                );
+            }
         }
     }
 
