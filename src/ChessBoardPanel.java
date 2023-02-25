@@ -11,10 +11,12 @@ public class ChessBoardPanel extends JPanel {
     private final int boardSize = 512;
     private final int marginSize = 16;
     private Integer[] clickIndicatorLocation = {null, null};
+    Board chessBoard;
 
-    ChessBoardPanel()
+    ChessBoardPanel(Board board)
     {
         super();
+        chessBoard = board;
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -86,6 +88,40 @@ public class ChessBoardPanel extends JPanel {
                     16,
                     16
             );
+        }
+
+        // Draw pieces
+        if (chessBoard != null)
+        {
+            drawPieces(g, extraSideMargin, extraTopMargin);
+        }
+    }
+
+    private void drawPieces(Graphics g, int extraSideMargin, int extraTopMargin)
+    {
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
+        for (int row = 0; row < chessBoard.board.length; row++)
+        {
+            for (int column = 0; column < chessBoard.board[row].length; column++)
+            {
+                Piece currPiece = chessBoard.board[row][column];
+                if (currPiece.type != PieceType.NONE)
+                {
+                    if (currPiece.isWhite)
+                    {
+                        g.setColor(Color.MAGENTA);
+                    }
+                    else
+                    {
+                        g.setColor(Color.ORANGE);
+                    }
+                    g.drawString(
+                            currPiece.pieceChar.toString(),
+                            marginSize + extraSideMargin + (column * 64) + 20,
+                            marginSize + extraTopMargin + (row * 64) + 20
+                    );
+                }
+            }
         }
     }
 
