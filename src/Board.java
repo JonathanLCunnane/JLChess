@@ -1,5 +1,9 @@
+import java.util.*;
+
 public class Board {
     Piece[][] board;
+    Map<Piece, List<int[]>> possibleMoves = new HashMap<>();
+    Piece[][] captureMap = new Piece[8][8];
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -13,35 +17,157 @@ public class Board {
     Board(Piece[][] startingBoard)
     {
         board = startingBoard;
+        configureBoard();
     }
     Board()
     {
         board = defaultBoard;
+        configureBoard();
     }
 
-    int[][] generateMoves(int row, int column)
+    private void configureBoard()
     {
-        Piece currPiece = board[row][column];
-        int[][] possibleMoves = null;/*
-        switch (currPiece.type)
+        // Fill capture map with NULL Pieces
+        for (int row = 0; row < board.length; row++)
         {
-            case PieceType.NONE -> possibleMoves = null;
-            case PieceType.PAWN -> possibleMoves = 'P';
-            case PieceType.KNIGHT -> possibleMoves = new int[][] {
-                    {column + 2, row + 1},
-                    {column + 1, row + 2},
-                    {column - 1, row + 2},
-                    {column - 2, row + 1},
-                    {column - 2, row - 1},
-                    {column - 1, row - 2},
-                    {column + 1, row - 2},
-                    {column + 2, row - 1}
-            };
-            case PieceType.BISHOP -> possibleMoves = 'B';
-            case PieceType.ROOK -> possibleMoves = 'R';
-            case PieceType.QUEEN -> possibleMoves = 'Q';
-            case PieceType.KING -> possibleMoves = 'K';
-        }*/
-        return possibleMoves;
+            for (int column = 0; column < board[row].length; column++)
+            {
+                captureMap[row][column] = new Piece(PieceType.NONE);
+            }
+        }
+        int[] wKingIDXS = new int[] {-1, -1};
+        int[] bKingIDXS = new int[] {-1, -1};
+        // Get all piece moves apart from king.
+        for (int row = 0; row < board.length; row++)
+        {
+            for (int column = 0; column < board[row].length; column++)
+            {
+                Piece currPiece = board[row][column];
+                List<int[]> currPossibleMoves = new ArrayList<>();
+                switch (currPiece.type)
+                {
+                    case PieceType.NONE ->
+                    {}
+                    case PieceType.PAWN ->
+                    {
+                        if (currPiece.isWhite)
+                        {
+                            // Moves
+                            if (row > 0 && board[row - 1][column].type == PieceType.NONE)
+                            {
+                                currPossibleMoves.add(new int[] {row - 1, column});
+                                if (row > 1 && currPiece.moveCount == 0 && board[row - 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row - 2, column});
+                            }
+                            // Captures
+                            if (row > 0 && column > 0 && !board[row - 1][column - 1].isWhite)
+                            {
+                                currPossibleMoves.add(new int[] {row - 1, column - 1});
+                            }
+                            if (row > 0 && column < 7 && !board[row - 1][column + 1].isWhite)
+                            {
+                                currPossibleMoves.add(new int[] {row - 1, column + 1});
+                            }
+                            // En passant
+                            if (column > 0)
+                            {
+                                Piece underPassantLeft = board[row][column - 1];
+                                if (!underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                                {
+                                    currPossibleMoves.add(new int[] {row - 1, column - 1});
+                                }
+                            }
+                            if (column < 7)
+                            {
+                                Piece underPassantRight = board[row][column + 1];
+                                if (!underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                                {
+                                    currPossibleMoves.add(new int[] {row - 1, column + 1});
+                                }
+                            }
+                        }
+                        else //isBlack
+                        {
+                            // Moves
+                            if (row < 7 && board[row + 1][column].type == PieceType.NONE)
+                            {
+                                currPossibleMoves.add(new int[] {row + 1, column});
+                                if (row < 6 && currPiece.moveCount == 0 && board[row + 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row + 2, column});
+                            }
+                            // Captures
+                            if (row < 7 && column > 0 && board[row + 1][column - 1].isWhite && board[row + 1][column - 1].type != PieceType.NONE)
+                            {
+                                currPossibleMoves.add(new int[] {row + 1, column - 1});
+                            }
+                            if (row < 7 && column < 7 && board[row + 1][column + 1].isWhite && board[row + 1][column + 1].type != PieceType.NONE)
+                            {
+                                currPossibleMoves.add(new int[] {row + 1, column + 1});
+                            }
+                            // En passant
+                            if (column > 0)
+                            {
+                                Piece underPassantLeft = board[row][column - 1];
+                                if (underPassantLeft.type != PieceType.NONE && underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                                {
+                                    currPossibleMoves.add(new int[] {row + 1, column - 1});
+                                }
+                            }
+                            if (column < 7)
+                            {
+                                Piece underPassantRight = board[row][column + 1];
+                                if (underPassantRight.type != PieceType.NONE && underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                                {
+                                    currPossibleMoves.add(new int[] {row + 1, column + 1});
+                                }
+                            }
+
+                        }
+                    }
+                    case PieceType.KNIGHT ->
+                    {
+                        // Get moves.
+                        currPossibleMoves.add(new int[] {row + 2, column + 1});
+                        currPossibleMoves.add(new int[] {row + 1, column + 2});
+                        currPossibleMoves.add(new int[] {row - 1, column + 2});
+                        currPossibleMoves.add(new int[] {row - 2, column + 1});
+                        currPossibleMoves.add(new int[] {row - 2, column - 1});
+                        currPossibleMoves.add(new int[] {row - 1, column - 2});
+                        currPossibleMoves.add(new int[] {row + 1, column - 2});
+                        currPossibleMoves.add(new int[] {row + 2, column - 1});
+
+                        currPossibleMoves.removeIf(move -> {
+                            if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
+                            Piece comparingPiece = board[move[0]][move[1]];
+                            if (comparingPiece.type != PieceType.NONE)
+                            {
+                                return currPiece.isWhite == comparingPiece.isWhite;
+                            }
+                            return false;
+                        });
+
+                        // Add moves to capture map
+                        for (int[] move: currPossibleMoves) captureMap[move[0]][move[1]] = currPiece;
+                    }
+                    case PieceType.BISHOP ->
+                    {
+
+                    }
+                    case PieceType.ROOK -> {}
+                    case PieceType.QUEEN -> {}
+                    case PieceType.KING ->
+                    {
+                        if (currPiece.isWhite)
+                        {
+                            wKingIDXS = new int[] {row, column};
+                        }
+                        else
+                        {
+                            bKingIDXS = new int[] {row, column};
+                        }
+                    } // King moves are dealt with later.
+                }
+                if (currPossibleMoves != null) possibleMoves.put(currPiece, currPossibleMoves);
+            }
+        }
+        // Get possible king moves.
     }
 }
