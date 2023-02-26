@@ -48,109 +48,8 @@ public class Board {
                 {
                     case PieceType.NONE ->
                     {}
-                    case PieceType.PAWN ->
-                    {
-                        if (currPiece.isWhite)
-                        {
-                            // Moves
-                            if (row > 0 && board[row - 1][column].type == PieceType.NONE)
-                            {
-                                currPossibleMoves.add(new int[] {row - 1, column});
-                                if (row > 1 && currPiece.moveCount == 0 && board[row - 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row - 2, column});
-                            }
-                            // Captures
-                            if (row > 0 && column > 0)
-                            {
-                                if (!board[row - 1][column - 1].isWhite) currPossibleMoves.add(new int[] {row - 1, column - 1});
-                                captureMap[row - 1][column - 1] = currPiece;
-                            }
-                            if (row > 0 && column < 7)
-                            {
-                                if (!board[row - 1][column + 1].isWhite) currPossibleMoves.add(new int[] {row - 1, column + 1});
-                                captureMap[row - 1][column + 1] = currPiece;
-                            }
-                            // En passant
-                            if (column > 0)
-                            {
-                                Piece underPassantLeft = board[row][column - 1];
-                                if (!underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
-                                {
-                                    currPossibleMoves.add(new int[] {row - 1, column - 1});
-                                }
-                            }
-                            if (column < 7)
-                            {
-                                Piece underPassantRight = board[row][column + 1];
-                                if (!underPassantRight.isWhite && underPassantRight.moveCount == 1)
-                                {
-                                    currPossibleMoves.add(new int[] {row - 1, column + 1});
-                                }
-                            }
-                        }
-                        else //isBlack
-                        {
-                            // Moves
-                            if (row < 7 && board[row + 1][column].type == PieceType.NONE)
-                            {
-                                currPossibleMoves.add(new int[] {row + 1, column});
-                                if (row < 6 && currPiece.moveCount == 0 && board[row + 2][column].type == PieceType.NONE) currPossibleMoves.add(new int[] {row + 2, column});
-                            }
-                            // Captures
-                            if (row < 7 && column > 0)
-                            {
-                                if (board[row + 1][column - 1].type != PieceType.NONE  && board[row + 1][column - 1].isWhite) currPossibleMoves.add(new int[] {row + 1, column - 1});
-                                captureMap[row + 1][column - 1] = currPiece;
-                            }
-                            if (row < 7 && column < 7)
-                            {
-                                if (board[row + 1][column + 1].type != PieceType.NONE && board[row + 1][column + 1].isWhite) currPossibleMoves.add(new int[] {row + 1, column + 1});
-                                captureMap[row + 1][column + 1] = currPiece;
-                            }
-                            // En passant
-                            if (column > 0)
-                            {
-                                Piece underPassantLeft = board[row][column - 1];
-                                if (underPassantLeft.type != PieceType.NONE && underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
-                                {
-                                    currPossibleMoves.add(new int[] {row + 1, column - 1});
-                                }
-                            }
-                            if (column < 7)
-                            {
-                                Piece underPassantRight = board[row][column + 1];
-                                if (underPassantRight.type != PieceType.NONE && underPassantRight.isWhite && underPassantRight.moveCount == 1)
-                                {
-                                    currPossibleMoves.add(new int[] {row + 1, column + 1});
-                                }
-                            }
-
-                        }
-                    }
-                    case PieceType.KNIGHT ->
-                    {
-                        // Get moves.
-                        currPossibleMoves.add(new int[] {row + 2, column + 1});
-                        currPossibleMoves.add(new int[] {row + 1, column + 2});
-                        currPossibleMoves.add(new int[] {row - 1, column + 2});
-                        currPossibleMoves.add(new int[] {row - 2, column + 1});
-                        currPossibleMoves.add(new int[] {row - 2, column - 1});
-                        currPossibleMoves.add(new int[] {row - 1, column - 2});
-                        currPossibleMoves.add(new int[] {row + 1, column - 2});
-                        currPossibleMoves.add(new int[] {row + 2, column - 1});
-
-                        currPossibleMoves.removeIf(move -> {
-                            if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
-                            Piece comparingPiece = board[move[0]][move[1]];
-                            if (comparingPiece.type != PieceType.NONE)
-                            {
-                                return currPiece.isWhite == comparingPiece.isWhite;
-                            }
-                            return false;
-                        });
-
-                        // Add moves to capture map
-                        for (int[] move: currPossibleMoves) captureMap[move[0]][move[1]] = currPiece;
-                    }
+                    case PieceType.PAWN -> currPossibleMoves = getPawnMoves(row, column, currPiece);
+                    case PieceType.KNIGHT -> currPossibleMoves = getKnightMoves(row, column, currPiece);
                     case PieceType.BISHOP ->
                     {
 
@@ -173,5 +72,115 @@ public class Board {
             }
         }
         // Get possible king moves.
+    }
+
+    private List<int[]> getPawnMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+        if (currPiece.isWhite)
+        {
+            // Moves
+            if (row > 0 && board[row - 1][column].type == PieceType.NONE)
+            {
+                moves.add(new int[] {row - 1, column});
+                if (row > 1 && currPiece.moveCount == 0 && board[row - 2][column].type == PieceType.NONE) moves.add(new int[] {row - 2, column});
+            }
+            // Captures
+            if (row > 0 && column > 0)
+            {
+                if (!board[row - 1][column - 1].isWhite) moves.add(new int[] {row - 1, column - 1});
+                captureMap[row - 1][column - 1] = currPiece;
+            }
+            if (row > 0 && column < 7)
+            {
+                if (!board[row - 1][column + 1].isWhite) moves.add(new int[] {row - 1, column + 1});
+                captureMap[row - 1][column + 1] = currPiece;
+            }
+            // En passant
+            if (column > 0)
+            {
+                Piece underPassantLeft = board[row][column - 1];
+                if (!underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                {
+                    moves.add(new int[] {row - 1, column - 1});
+                }
+            }
+            if (column < 7)
+            {
+                Piece underPassantRight = board[row][column + 1];
+                if (!underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                {
+                    moves.add(new int[] {row - 1, column + 1});
+                }
+            }
+        }
+        else //isBlack
+        {
+            // Moves
+            if (row < 7 && board[row + 1][column].type == PieceType.NONE)
+            {
+                moves.add(new int[] {row + 1, column});
+                if (row < 6 && currPiece.moveCount == 0 && board[row + 2][column].type == PieceType.NONE) moves.add(new int[] {row + 2, column});
+            }
+            // Captures
+            if (row < 7 && column > 0)
+            {
+                if (board[row + 1][column - 1].type != PieceType.NONE  && board[row + 1][column - 1].isWhite) moves.add(new int[] {row + 1, column - 1});
+                captureMap[row + 1][column - 1] = currPiece;
+            }
+            if (row < 7 && column < 7)
+            {
+                if (board[row + 1][column + 1].type != PieceType.NONE && board[row + 1][column + 1].isWhite) moves.add(new int[] {row + 1, column + 1});
+                captureMap[row + 1][column + 1] = currPiece;
+            }
+            // En passant
+            if (column > 0)
+            {
+                Piece underPassantLeft = board[row][column - 1];
+                if (underPassantLeft.type != PieceType.NONE && underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                {
+                    moves.add(new int[] {row + 1, column - 1});
+                }
+            }
+            if (column < 7)
+            {
+                Piece underPassantRight = board[row][column + 1];
+                if (underPassantRight.type != PieceType.NONE && underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                {
+                    moves.add(new int[] {row + 1, column + 1});
+                }
+            }
+
+        }
+        return moves;
+    }
+
+    private List<int[]> getKnightMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+
+        // Get moves.
+        moves.add(new int[] {row + 2, column + 1});
+        moves.add(new int[] {row + 1, column + 2});
+        moves.add(new int[] {row - 1, column + 2});
+        moves.add(new int[] {row - 2, column + 1});
+        moves.add(new int[] {row - 2, column - 1});
+        moves.add(new int[] {row - 1, column - 2});
+        moves.add(new int[] {row + 1, column - 2});
+        moves.add(new int[] {row + 2, column - 1});
+
+        moves.removeIf(move -> {
+            if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
+            Piece comparingPiece = board[move[0]][move[1]];
+            if (comparingPiece.type != PieceType.NONE)
+            {
+                return currPiece.isWhite == comparingPiece.isWhite;
+            }
+            return false;
+        });
+
+        // Add moves to capture map
+        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
+        return moves;
     }
 }

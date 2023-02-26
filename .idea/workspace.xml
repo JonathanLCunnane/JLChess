@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Moved the image getter method from ChessBoardPanel to a new ImageGetter class.">
-      <change afterPath="$PROJECT_DIR$/src/ImageGetter.java" afterDir="false" />
+    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Added functionality to show the capture map.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ChessBoardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChessBoardPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Board.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,21 +40,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Jonathan/OneDrive/IdeaProjects/JLChess&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.import&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/Jonathan/OneDrive/IdeaProjects/JLChess",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "editor.preferences.import",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\jonat\OneDrive\IdeaProjects\JLChess\src\img" />
@@ -123,7 +123,84 @@
       <option name="project" value="LOCAL" />
       <updated>1677329591070</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Moved the image getter method from ChessBoardPanel to a new ImageGetter class.">
+      <created>1677329842490</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1677329842490</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Added functionality to draw pieces onto the panel.">
+      <created>1677329926586</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1677329926586</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Added a moveCount variable intended for use in castling and en passant.">
+      <created>1677348798140</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1677348798140</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Added move indicators to the paintComponent function.">
+      <created>1677348835869</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1677348835869</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added valid move generation for Pawns and Knights, as well as created a capture map to be used for evaluating checks and king moves.">
+      <created>1677349285410</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1677349285410</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Improved piece selection.">
+      <created>1677349575662</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1677349575663</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Added a show capture map button to the menu bar.">
+      <created>1677352597824</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1677352597824</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Added a show capture map button to the menu bar.">
+      <created>1677352617639</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1677352617639</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added an action listener for the application.">
+      <created>1677352650156</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1677352650156</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Fixed capture map additions.">
+      <created>1677352699470</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1677352699470</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added functionality to show the capture map.">
+      <created>1677352724500</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1677352724500</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -139,6 +216,26 @@
     <MESSAGE value="Added piece PNGs." />
     <MESSAGE value="Added a piecePNG instance variable to the Piece class." />
     <MESSAGE value="Moved the image getter method from ChessBoardPanel to a new ImageGetter class." />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved the image getter method from ChessBoardPanel to a new ImageGetter class." />
+    <MESSAGE value="Added functionality to draw pieces onto the panel." />
+    <MESSAGE value="Added a moveCount variable intended for use in castling and en passant." />
+    <MESSAGE value="Added move indicators to the paintComponent function." />
+    <MESSAGE value="Added valid move generation for Pawns and Knights, as well as created a capture map to be used for evaluating checks and king moves." />
+    <MESSAGE value="Improved piece selection." />
+    <MESSAGE value="Added a show capture map button to the menu bar." />
+    <MESSAGE value="Added an action listener for the application." />
+    <MESSAGE value="Fixed capture map additions." />
+    <MESSAGE value="Added functionality to show the capture map." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added functionality to show the capture map." />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="ProcessAttachRunConfigurationType">
+        <watch expression="possibleMoves" />
+      </configuration>
+      <configuration name="Application">
+        <watch expression="captureMap" />
+        <watch expression="chessBoard" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
