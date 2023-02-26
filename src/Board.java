@@ -25,6 +25,40 @@ public class Board {
         configureBoard();
     }
 
+    void tryMove(Integer[] from, Integer[] to)
+    {
+        if (from[0] == null || from[1] == null || to[0] == null || to[1] == null) return;
+        if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return;
+        if (from == to) return;
+        if (board[from[0]][from[1]].type == PieceType.NONE) return;
+        if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
+        {
+            // Check for en passant.
+            if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
+            {
+                board[from[0]][from[1]].moveCount++;
+                board[to[0]][to[1]] = board[from[0]][from[1]];
+                board[from[0]][from[1]] = new Piece(PieceType.NONE);
+                // En passant-ed piece.
+                if (from[0] == 3) // If white piece is capturing
+                {
+                    board[to[0] + 1][to[1]] = new Piece(PieceType.NONE);
+                }
+                else // If black piece is capturing.
+                {
+                    board[to[0] - 1][to[1]] = new Piece(PieceType.NONE);
+                }
+            }
+            else
+            {
+                board[from[0]][from[1]].moveCount++;
+                board[to[0]][to[1]] = board[from[0]][from[1]];
+                board[from[0]][from[1]] = new Piece(PieceType.NONE);
+            }
+            configureBoard();
+        }
+    }
+
     private void configureBoard()
     {
         // Fill capture map with NULL Pieces
@@ -50,10 +84,7 @@ public class Board {
                     {}
                     case PieceType.PAWN -> currPossibleMoves = getPawnMoves(row, column, currPiece);
                     case PieceType.KNIGHT -> currPossibleMoves = getKnightMoves(row, column, currPiece);
-                    case PieceType.BISHOP ->
-                    {
-
-                    }
+                    case PieceType.BISHOP -> currPossibleMoves = getBishopMoves(row, column, currPiece);
                     case PieceType.ROOK -> {}
                     case PieceType.QUEEN -> {}
                     case PieceType.KING ->
@@ -182,5 +213,76 @@ public class Board {
         // Add moves to capture map
         for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
         return moves;
+    }
+
+    private List<int[]> getBishopMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+
+        int rowScan;
+        int columnScan;
+        // Left-Up direction.
+        rowScan = row - 1;
+        columnScan = column - 1;
+        while (rowScan >= 0 && columnScan >= 0)
+        {
+            int[] move = new int[] {rowScan, columnScan};
+            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan--;
+            columnScan--;
+        }
+
+        // Right-Up direction.
+        rowScan = row - 1;
+        columnScan = column + 1;
+        while (rowScan >= 0 && columnScan <= 7)
+        {
+            int[] move = new int[] {rowScan, columnScan};
+            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan--;
+            columnScan++;
+        }
+
+        // Right-Down direction.
+        rowScan = row + 1;
+        columnScan = column + 1;
+        while (rowScan <= 7 && columnScan <= 7)
+        {
+            int[] move = new int[] {rowScan, columnScan};
+            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan++;
+            columnScan++;
+        }
+
+        // Left-Down direction.
+        rowScan = row + 1;
+        columnScan = column - 1;
+        while (rowScan <= 7 && columnScan >= 0)
+        {
+            int[] move = new int[] {rowScan, columnScan};
+            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan++;
+            columnScan--;
+        }
+
+        return moves;
+    }
+
+    private boolean shouldBreakBishopMoves(List<int[]> moves, int[] move, Piece currPiece)
+    {
+        if (board[move[0]][move[1]].type != PieceType.NONE)
+        {
+            if (board[move[0]][move[1]].isWhite != currPiece.isWhite)
+            {
+                moves.add(move);
+                captureMap[move[0]][move[1]] = currPiece;
+            }
+            return true;
+        }
+        return false;
     }
 }
