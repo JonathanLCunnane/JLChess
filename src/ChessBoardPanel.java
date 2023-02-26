@@ -10,6 +10,7 @@ public class ChessBoardPanel extends JPanel {
     private final int boardSize = 512;
     private final int marginSize = 16;
     private Integer[] clickIndicatorLocation = {null, null};
+    private Integer[] previousClickIndicatorLocation = {null, null};
     boolean captureMapOn = false;
     Board chessBoard;
     BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
@@ -28,16 +29,16 @@ public class ChessBoardPanel extends JPanel {
             public void mousePressed(MouseEvent mouseEvent) {
                 int extraTopMargin = (getHeight() - boardSize)/2;
                 int extraSideMargin = (getWidth() - boardSize)/2;
-                int xBoard = mouseEvent.getX() - extraSideMargin;
-                int yBoard = mouseEvent.getY() - extraTopMargin;
+                int columnBoard = mouseEvent.getX() - extraSideMargin;
+                int rowBoard = mouseEvent.getY() - extraTopMargin;
 
-                int xIdx = xBoard / 64;
-                int yIdx = yBoard / 64;
+                int columnIdx = columnBoard / 64;
+                int rowIdx = rowBoard / 64;
 
-                if ((xIdx >= 0 && xIdx < 8) && (yIdx >= 0 && yIdx < 8))
+                if ((columnIdx >= 0 && columnIdx < 8) && (rowIdx >= 0 && rowIdx < 8))
                 {
-                    clickIndicatorLocation[0] = xIdx;
-                    clickIndicatorLocation[1] = yIdx;
+                    clickIndicatorLocation[0] = rowIdx;
+                    clickIndicatorLocation[1] = columnIdx;
                 }
                 else
                 {
@@ -52,18 +53,23 @@ public class ChessBoardPanel extends JPanel {
 
                 int extraTopMargin = (getHeight() - boardSize)/2;
                 int extraSideMargin = (getWidth() - boardSize)/2;
-                int xBoard = mouseEvent.getX() - extraSideMargin;
-                int yBoard = mouseEvent.getY() - extraTopMargin;
+                int columnBoard = mouseEvent.getX() - extraSideMargin;
+                int rowBoard = mouseEvent.getY() - extraTopMargin;
 
-                int xIdx = xBoard / 64;
-                int yIdx = yBoard / 64;
+                int columnIdx = columnBoard / 64;
+                int rowIdx = rowBoard / 64;
 
-                if ((xIdx >= 0 && xIdx < 8) && (yIdx >= 0 && yIdx < 8))
+                if ((columnIdx >= 0 && columnIdx < 8) && (rowIdx >= 0 && rowIdx < 8))
                 {
-                    newClickIndicatorLocation[0] = xIdx;
-                    newClickIndicatorLocation[1] = yIdx;
+                    newClickIndicatorLocation[0] = rowIdx;
+                    newClickIndicatorLocation[1] = columnIdx;
                 }
-                if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation)) paintComponent(getGraphics());
+                if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation))
+                {
+                    board.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
+                    paintComponent(getGraphics());
+                    previousClickIndicatorLocation = clickIndicatorLocation.clone();
+                }
             }
 
             @Override
@@ -123,8 +129,8 @@ public class ChessBoardPanel extends JPanel {
             g2.setStroke(new BasicStroke(3));
             g2.setColor(Color.BLUE);
             g2.drawArc(
-                    marginSize + extraSideMargin + 24 + (clickIndicatorLocation[0] * 64),
-                    marginSize + extraTopMargin + 24 + (clickIndicatorLocation[1] * 64),
+                    marginSize + extraSideMargin + 24 + (clickIndicatorLocation[1] * 64),
+                    marginSize + extraTopMargin + 24 + (clickIndicatorLocation[0] * 64),
                     16,
                     16,
                     0,
@@ -132,7 +138,7 @@ public class ChessBoardPanel extends JPanel {
             );
 
             // Draw move indicator(s)
-            Piece currPiece = chessBoard.board[clickIndicatorLocation[1]][clickIndicatorLocation[0]];
+            Piece currPiece = chessBoard.board[clickIndicatorLocation[0]][clickIndicatorLocation[1]];
             List<int[]> moves = chessBoard.possibleMoves.get(currPiece);
             g2.setColor(Color.RED);
             for (int[] move: moves)
