@@ -177,24 +177,44 @@ public class ChessBoardPanel extends JPanel {
 
     private void drawCaptureMap(Graphics g, int extraSideMargin, int extraTopMargin)
     {
-        Graphics2D g2 = (Graphics2D) g;
-        Color captureMapColour = Color.YELLOW;
-        captureMapColour = new Color(captureMapColour.getRed()/255F, captureMapColour.getGreen()/255F, captureMapColour.getBlue()/255F, 0.2F);
-        g2.setColor(captureMapColour);
+        Color whiteCaptureMapColour = Color.YELLOW;
+        whiteCaptureMapColour = new Color(whiteCaptureMapColour.getRed()/255F, whiteCaptureMapColour.getGreen()/255F, whiteCaptureMapColour.getBlue()/255F, 0.2F);
+        Color blackCaptureMapColour = Color.BLUE;
+        blackCaptureMapColour = new Color(blackCaptureMapColour.getRed()/255F, blackCaptureMapColour.getGreen()/255F, blackCaptureMapColour.getBlue()/255F, 0.2F);
+        Color bothCaptureMapColour = Color.GREEN;
+        bothCaptureMapColour = new Color(bothCaptureMapColour.getRed()/255F, bothCaptureMapColour.getGreen()/255F, bothCaptureMapColour.getBlue()/255F, 0.2F);
+        Color currColour;
+        boolean blackPresent;
+        boolean whitePresent;
         for (int row = 0; row < chessBoard.board.length; row++)
         {
             for (int column = 0; column < chessBoard.board[row].length; column++)
             {
-                Piece currPiece = chessBoard.captureMap[row][column];
-                if (currPiece.type != PieceType.NONE)
+                whitePresent = false;
+                blackPresent = false;
+                for (Piece piece: chessBoard.captureMap[row][column].pieces)
                 {
-                    g.fillRect(
-                            marginSize + extraSideMargin + (column * 64),
-                            marginSize + extraTopMargin + (row * 64),
-                            64,
-                            64
-                    );
+                    if (piece.isWhite)
+                    {
+                        whitePresent = true;
+                    }
+                    else
+                    {
+                        blackPresent = true;
+                    }
                 }
+                currColour = null;
+                if (whitePresent && blackPresent) currColour = bothCaptureMapColour;
+                if (whitePresent && !blackPresent) currColour = whiteCaptureMapColour;
+                if (!whitePresent && blackPresent) currColour = blackCaptureMapColour;
+                if (currColour == null) continue;
+                g.setColor(currColour);
+                g.fillRect(
+                        marginSize + extraSideMargin + (column * 63),
+                        marginSize + extraTopMargin + (row * 64),
+                        64,
+                        64
+                );
             }
         }
     }
