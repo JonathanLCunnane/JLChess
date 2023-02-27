@@ -210,7 +210,7 @@ public class ChessBoardPanel extends JPanel {
                 if (currColour == null) continue;
                 g.setColor(currColour);
                 g.fillRect(
-                        marginSize + extraSideMargin + (column * 63),
+                        marginSize + extraSideMargin + (column * 64),
                         marginSize + extraTopMargin + (row * 64),
                         64,
                         64
