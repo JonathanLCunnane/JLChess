@@ -85,8 +85,8 @@ public class Board {
                     case PieceType.PAWN -> currPossibleMoves = getPawnMoves(row, column, currPiece);
                     case PieceType.KNIGHT -> currPossibleMoves = getKnightMoves(row, column, currPiece);
                     case PieceType.BISHOP -> currPossibleMoves = getBishopMoves(row, column, currPiece);
-                    case PieceType.ROOK -> {}
-                    case PieceType.QUEEN -> {}
+                    case PieceType.ROOK -> currPossibleMoves = getRookMoves(row, column, currPiece);
+                    case PieceType.QUEEN -> currPossibleMoves = getQueenMoves(row, column, currPiece);
                     case PieceType.KING ->
                     {
                         if (currPiece.isWhite)
@@ -227,7 +227,7 @@ public class Board {
         while (rowScan >= 0 && columnScan >= 0)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece)) break;
             moves.add(move);
             rowScan--;
             columnScan--;
@@ -239,7 +239,7 @@ public class Board {
         while (rowScan >= 0 && columnScan <= 7)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece)) break;
             moves.add(move);
             rowScan--;
             columnScan++;
@@ -251,7 +251,7 @@ public class Board {
         while (rowScan <= 7 && columnScan <= 7)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece)) break;
             moves.add(move);
             rowScan++;
             columnScan++;
@@ -263,16 +263,78 @@ public class Board {
         while (rowScan <= 7 && columnScan >= 0)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakBishopMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece)) break;
             moves.add(move);
             rowScan++;
             columnScan--;
         }
 
+        // Add moves to capture map
+        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
         return moves;
     }
 
-    private boolean shouldBreakBishopMoves(List<int[]> moves, int[] move, Piece currPiece)
+    private List<int[]> getRookMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+
+        int rowScan;
+        int columnScan;
+        // Up direction.
+        rowScan = row - 1;
+        while (rowScan >= 0)
+        {
+            int[] move = new int[] {rowScan, column};
+            if (shouldBreakMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan--;
+        }
+
+        // Right direction.
+        columnScan = column + 1;
+        while (columnScan <= 7)
+        {
+            int[] move = new int[] {row, columnScan};
+            if (shouldBreakMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            columnScan++;
+        }
+
+        // Down direction.
+        rowScan = row + 1;
+        while (rowScan <= 7)
+        {
+            int[] move = new int[] {rowScan, column};
+            if (shouldBreakMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            rowScan++;
+        }
+
+        // Left direction.
+        columnScan = column - 1;
+        while (columnScan >= 0)
+        {
+            int[] move = new int[] {row, columnScan};
+            if (shouldBreakMoves(moves, move, currPiece)) break;
+            moves.add(move);
+            columnScan--;
+        }
+
+        // Add moves to capture map
+        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
+        return moves;
+    }
+
+    private List<int[]> getQueenMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+        moves.addAll(getBishopMoves(row, column, currPiece));
+        moves.addAll(getRookMoves(row, column, currPiece));
+
+        return moves;
+    }
+
+    private boolean shouldBreakMoves(List<int[]> moves, int[] move, Piece currPiece)
     {
         if (board[move[0]][move[1]].type != PieceType.NONE)
         {
