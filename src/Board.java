@@ -3,7 +3,7 @@ import java.util.*;
 public class Board {
     Piece[][] board;
     Map<Piece, List<int[]>> possibleMoves = new HashMap<>();
-    Piece[][] captureMap = new Piece[8][8];
+    PieceCollection[][] captureMap = new PieceCollection[8][8];
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -66,7 +66,7 @@ public class Board {
         {
             for (int column = 0; column < board[row].length; column++)
             {
-                captureMap[row][column] = new Piece(PieceType.NONE);
+                captureMap[row][column] = new PieceCollection();
             }
         }
         int[] wKingIDXS = new int[] {-1, -1};
@@ -120,12 +120,12 @@ public class Board {
             if (row > 0 && column > 0)
             {
                 if (!board[row - 1][column - 1].isWhite) moves.add(new int[] {row - 1, column - 1});
-                captureMap[row - 1][column - 1] = currPiece;
+                captureMap[row - 1][column - 1].pieces.add(currPiece);
             }
             if (row > 0 && column < 7)
             {
                 if (!board[row - 1][column + 1].isWhite) moves.add(new int[] {row - 1, column + 1});
-                captureMap[row - 1][column + 1] = currPiece;
+                captureMap[row - 1][column + 1].pieces.add(currPiece);
             }
             // En passant
             if (column > 0)
@@ -157,12 +157,12 @@ public class Board {
             if (row < 7 && column > 0)
             {
                 if (board[row + 1][column - 1].type != PieceType.NONE  && board[row + 1][column - 1].isWhite) moves.add(new int[] {row + 1, column - 1});
-                captureMap[row + 1][column - 1] = currPiece;
+                captureMap[row + 1][column - 1].pieces.add(currPiece);
             }
             if (row < 7 && column < 7)
             {
                 if (board[row + 1][column + 1].type != PieceType.NONE && board[row + 1][column + 1].isWhite) moves.add(new int[] {row + 1, column + 1});
-                captureMap[row + 1][column + 1] = currPiece;
+                captureMap[row + 1][column + 1].pieces.add(currPiece);
             }
             // En passant
             if (column > 0)
@@ -211,7 +211,7 @@ public class Board {
         });
 
         // Add moves to capture map
-        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
+        for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
         return moves;
     }
 
@@ -270,7 +270,7 @@ public class Board {
         }
 
         // Add moves to capture map
-        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
+        for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
         return moves;
     }
 
@@ -321,7 +321,7 @@ public class Board {
         }
 
         // Add moves to capture map
-        for (int[] move: moves) captureMap[move[0]][move[1]] = currPiece;
+        for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
         return moves;
     }
 
@@ -341,7 +341,7 @@ public class Board {
             if (board[move[0]][move[1]].isWhite != currPiece.isWhite)
             {
                 moves.add(move);
-                captureMap[move[0]][move[1]] = currPiece;
+                captureMap[move[0]][move[1]].pieces.add(currPiece);
             }
             return true;
         }
