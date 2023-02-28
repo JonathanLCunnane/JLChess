@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ChessBoardPanel extends JPanel {
     private final int boardSize = 512;
@@ -66,7 +67,9 @@ public class ChessBoardPanel extends JPanel {
                 }
                 if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation))
                 {
-                    board.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
+                    boolean moved = board.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
+                    if (moved) clickIndicatorLocation = new Integer[] {null, null};
+                    if (Objects.equals(clickIndicatorLocation[0], previousClickIndicatorLocation[0]) && Objects.equals(clickIndicatorLocation[1], previousClickIndicatorLocation[1])) clickIndicatorLocation = new Integer[] {null, null};
                     paintComponent(getGraphics());
                     previousClickIndicatorLocation = clickIndicatorLocation.clone();
                 }
