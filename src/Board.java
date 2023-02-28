@@ -25,12 +25,12 @@ public class Board {
         configureBoard();
     }
 
-    void tryMove(Integer[] from, Integer[] to)
+    boolean tryMove(Integer[] from, Integer[] to)
     {
-        if (from[0] == null || from[1] == null || to[0] == null || to[1] == null) return;
-        if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return;
-        if (from == to) return;
-        if (board[from[0]][from[1]].type == PieceType.NONE) return;
+        if (from[0] == null || from[1] == null || to[0] == null || to[1] == null) return false;
+        if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return false;
+        if (from == to) return false;
+        if (board[from[0]][from[1]].type == PieceType.NONE) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
             // Check for en passant.
@@ -56,7 +56,9 @@ public class Board {
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
             configureBoard();
+            return true;
         }
+        return false;
     }
 
     private void configureBoard()
