@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Board {
     Piece[][] board;
@@ -104,7 +107,16 @@ public class Board {
                 if (currPossibleMoves != null) possibleMoves.put(currPiece, currPossibleMoves);
             }
         }
-        // Get possible king moves.
+        // Get unvalidated king moves so that the capture map is correctly updated.
+        Piece wKing = board[wKingIDXS[0]][wKingIDXS[1]];
+        List<int[]> unvalidatedWKingMoves = getUnvalidatedKingMoves(wKingIDXS[0], wKingIDXS[1], wKing);
+        Piece bKing = board[bKingIDXS[0]][bKingIDXS[1]];
+        List<int[]> unvalidatedBKingMoves = getUnvalidatedKingMoves(bKingIDXS[0], bKingIDXS[1], bKing);
+
+        // Validate the king moves.
+        possibleMoves.put(wKing, getValidatedKingMoves(wKing, unvalidatedWKingMoves));
+        possibleMoves.put(bKing, getValidatedKingMoves(bKing, unvalidatedBKingMoves));
+
     }
 
     private List<int[]> getPawnMoves(int row, int column, Piece currPiece)
@@ -334,6 +346,48 @@ public class Board {
         moves.addAll(getRookMoves(row, column, currPiece));
 
         return moves;
+    }
+
+    private List<int[]> getUnvalidatedKingMoves(int row, int column, Piece currPiece)
+    {
+        List<int[]> moves = new ArrayList<>();
+
+        // Get moves.
+        moves.add(new int[] {row, column + 1});
+        moves.add(new int[] {row - 1, column + 1});
+        moves.add(new int[] {row - 1, column});
+        moves.add(new int[] {row - 1, column - 1});
+        moves.add(new int[] {row, column - 1});
+        moves.add(new int[] {row + 1, column - 1});
+        moves.add(new int[] {row + 1, column});
+        moves.add(new int[] {row + 1, column + 1});
+
+        moves.removeIf(move -> move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8);
+
+        // Add moves to capture map
+        for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
+        return moves;
+    }
+
+    private List<int[]> getValidatedKingMoves(Piece currPiece, List<int[]> unvalidatedMoves)
+    {
+        unvalidatedMoves.removeIf(move -> {
+            Piece comparingPiece = board[move[0]][move[1]];
+            // Check if the piece is the opposing colour.
+            if (comparingPiece.type != PieceType.NONE)
+            {
+                return currPiece.isWhite == comparingPiece.isWhite;
+            }
+            // Check if moving would put king in check.
+            for (Piece canCaptureSquare : captureMap[move[0]][move[1]].pieces)
+            {
+                if (canCaptureSquare.isWhite != currPiece.isWhite) return true;
+            }
+
+            return false;
+        });
+
+        return unvalidatedMoves;
     }
 
     private boolean shouldBreakMoves(List<int[]> moves, int[] move, Piece currPiece)
