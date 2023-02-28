@@ -58,7 +58,16 @@ public class Board {
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
+            long start = System.nanoTime();
             configureBoard();
+            long end = System.nanoTime();
+            float ms = (end - start)/1000000F;
+            int count = 0;
+            for (List<int[]> moves: possibleMoves.values())
+            {
+                count += moves.size();
+            }
+            System.out.printf("%fms for %d moves \n", ms, count);
             return true;
         }
         return false;
