@@ -113,7 +113,7 @@ public class Board {
                         }
                     } // King moves are dealt with later.
                 }
-                if (currPossibleMoves != null) possibleMoves.put(currPiece, currPossibleMoves);
+                possibleMoves.put(currPiece, currPossibleMoves);
             }
         }
         // Get unvalidated king moves so that the capture map is correctly updated.
