@@ -126,6 +126,9 @@ public class Board {
         possibleMoves.put(wKing, getValidatedKingMoves(wKing, unvalidatedWKingMoves));
         possibleMoves.put(bKing, getValidatedKingMoves(bKing, unvalidatedBKingMoves));
 
+        // Remove self-'discovered check' moves.
+        removeRemainingIllegalMoves(wKingIDXS[0], wKingIDXS[1]);
+        removeRemainingIllegalMoves(bKingIDXS[0], bKingIDXS[1]);
     }
 
     private List<int[]> getPawnMoves(int row, int column, Piece currPiece)
@@ -397,6 +400,245 @@ public class Board {
         });
 
         return unvalidatedMoves;
+    }
+
+    private void removeRemainingIllegalMoves(int kingRow, int kingColumn)
+    {
+        // Send out rays in each direction to see if a piece is pinned. If so remove all possible moves not in the
+        // direction of the ray.
+        Piece king = board[kingRow][kingColumn];
+
+        int rowScan;
+        int columnScan;
+
+        boolean possiblePin;
+        int[] possiblePinMove;
+        Piece possiblePinPiece;
+
+        // Right
+        columnScan = kingColumn + 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan <= 7)
+        {
+            Piece currPiece = board[kingRow][columnScan];
+            if (currPiece.type == PieceType.NONE) { columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {kingRow, columnScan};
+                possiblePinPiece = board[kingRow][columnScan];
+                columnScan++;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> move[0] != kingRow);
+                }
+                break;
+            }
+        }
+
+        // Up Right
+        columnScan = kingColumn + 1;
+        rowScan = kingRow - 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan <= 7 && rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, columnScan};
+                possiblePinPiece = board[rowScan][columnScan];
+                rowScan--;
+                columnScan++;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != move[1] -  kingColumn);
+                }
+                break;
+            }
+        }
+
+        // Up
+        rowScan = kingRow - 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][kingColumn];
+            if (currPiece.type == PieceType.NONE) { rowScan--; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, kingColumn};
+                possiblePinPiece = board[rowScan][kingColumn];
+                rowScan--;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> move[1] != kingColumn);
+                }
+                break;
+            }
+        }
+
+        // Up Left
+        columnScan = kingColumn - 1;
+        rowScan = kingRow - 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan >= 0 && rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, columnScan};
+                possiblePinPiece = board[rowScan][columnScan];
+                rowScan--;
+                columnScan--;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != kingColumn - move[1]);
+                }
+                break;
+            }
+        }
+
+        // Left
+        columnScan = kingColumn - 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan >= 0)
+        {
+            Piece currPiece = board[kingRow][columnScan];
+            if (currPiece.type == PieceType.NONE) { columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {kingRow, columnScan};
+                possiblePinPiece = board[kingRow][columnScan];
+                columnScan--;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> move[0] != kingRow);
+                }
+                break;
+            }
+        }
+
+        // Down Left
+        columnScan = kingColumn - 1;
+        rowScan = kingRow + 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan >= 0 && rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, columnScan};
+                possiblePinPiece = board[rowScan][columnScan];
+                rowScan++;
+                columnScan--;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != move[1] - kingColumn);
+                }
+                break;
+            }
+        }
+
+        // Down
+        rowScan = kingRow + 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][kingColumn];
+            if (currPiece.type == PieceType.NONE) { rowScan++; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, kingColumn};
+                possiblePinPiece = board[rowScan][kingColumn];
+                rowScan++;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> move[1] != kingColumn);
+                }
+                break;
+            }
+        }
+
+        // Down Right
+        columnScan = kingColumn + 1;
+        rowScan = kingRow + 1;
+        possiblePin = false;
+        possiblePinPiece = null;
+        possiblePinMove = null;
+        while (columnScan <= 7 && rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite)
+            {
+                if (possiblePin) break;
+                possiblePin = true;
+                possiblePinMove = new int[] {rowScan, columnScan};
+                possiblePinPiece = board[rowScan][columnScan];
+                rowScan++;
+                columnScan++;
+            }
+            else
+            {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+
+                    possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != kingColumn - move[1]);
+                }
+                break;
+            }
+        }
+
     }
 
     private boolean shouldBreakMoves(List<int[]> moves, int[] move, Piece currPiece)
