@@ -52,6 +52,32 @@ public class Board {
                     board[to[0] - 1][to[1]] = new Piece(PieceType.NONE);
                 }
             }
+            // Check for queen side castling
+            else if (board[from[0]][from[1]].type == PieceType.KING && (from[1] - to[1] == 2))
+            {
+                // Move king
+                board[from[0]][from[1]].moveCount++;
+                board[to[0]][to[1]] = board[from[0]][from[1]];
+                board[from[0]][from[1]] = new Piece(PieceType.NONE);
+
+                // Move rook
+                board[from[0]][from[1] - 4].moveCount++;
+                board[to[0]][to[1] + 1] = board[from[0]][from[1] - 4];
+                board[from[0]][from[1] - 4] = new Piece(PieceType.NONE);
+            }
+            // Check for king side castling
+            else if (board[from[0]][from[1]].type == PieceType.KING && from[1] - to[1] == -2)
+            {
+                // Move king
+                board[from[0]][from[1]].moveCount++;
+                board[to[0]][to[1]] = board[from[0]][from[1]];
+                board[from[0]][from[1]] = new Piece(PieceType.NONE);
+
+                // Move rook
+                board[from[0]][from[1] + 3].moveCount++;
+                board[to[0]][to[1] - 1] = board[from[0]][from[1] + 3];
+                board[from[0]][from[1] + 3] = new Piece(PieceType.NONE);
+            }
             else
             {
                 board[from[0]][from[1]].moveCount++;
@@ -123,8 +149,8 @@ public class Board {
         List<int[]> unvalidatedBKingMoves = getUnvalidatedKingMoves(bKingIDXS[0], bKingIDXS[1], bKing);
 
         // Validate the king moves.
-        possibleMoves.put(wKing, getValidatedKingMoves(wKing, unvalidatedWKingMoves));
-        possibleMoves.put(bKing, getValidatedKingMoves(bKing, unvalidatedBKingMoves));
+        possibleMoves.put(wKing, getValidatedKingMoves(wKing, unvalidatedWKingMoves, wKingIDXS[0], wKingIDXS[1]));
+        possibleMoves.put(bKing, getValidatedKingMoves(bKing, unvalidatedBKingMoves, bKingIDXS[0], bKingIDXS[1]));
 
         // Remove self-'discovered check' moves.
         removeRemainingIllegalMoves(wKingIDXS[0], wKingIDXS[1]);
@@ -378,10 +404,17 @@ public class Board {
 
         // Add moves to capture map
         for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
+
+        // Add castling
+        if (column != 4) return moves;
+        Piece queenRook = board[row][column - 4];
+        Piece kingRook = board[row][column + 3];
+        if (currPiece.moveCount == 0 && queenRook.type == PieceType.ROOK && queenRook.moveCount == 0) moves.add(new int[] {row, column - 2});
+        if (currPiece.moveCount == 0 && kingRook.type == PieceType.ROOK && kingRook.moveCount == 0) moves.add(new int[] {row, column + 2});
         return moves;
     }
 
-    private List<int[]> getValidatedKingMoves(Piece currPiece, List<int[]> unvalidatedMoves)
+    private List<int[]> getValidatedKingMoves(Piece currPiece, List<int[]> unvalidatedMoves, int kingRow, int kingColumn)
     {
         unvalidatedMoves.removeIf(move -> {
             Piece comparingPiece = board[move[0]][move[1]];
@@ -397,6 +430,12 @@ public class Board {
             }
 
             return false;
+        });
+
+        // Remove invalid castling moves.
+        unvalidatedMoves.removeIf(move -> {
+            if (move[1] == kingColumn + 2 && !new ChessList(unvalidatedMoves).contains(new int[] {kingRow, kingColumn + 1})) return true;
+            return (move[1] == kingColumn - 2 && (!new ChessList(unvalidatedMoves).contains(new int[]{kingRow, kingColumn - 1}) || board[move[0]][kingColumn - 3].type != PieceType.NONE));
         });
 
         return unvalidatedMoves;
