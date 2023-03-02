@@ -279,7 +279,14 @@ public class Board {
         while (rowScan >= 0 && columnScan >= 0)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] > 0 && move[1] > 0) captureMap[move[0] - 1][move[1] - 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan--;
             columnScan--;
@@ -291,7 +298,14 @@ public class Board {
         while (rowScan >= 0 && columnScan <= 7)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] > 0 && move[1] < 7) captureMap[move[0] - 1][move[1] + 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan--;
             columnScan++;
@@ -303,7 +317,14 @@ public class Board {
         while (rowScan <= 7 && columnScan <= 7)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] < 7 && move[1] < 7) captureMap[move[0] + 1][move[1] + 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan++;
             columnScan++;
@@ -315,7 +336,14 @@ public class Board {
         while (rowScan <= 7 && columnScan >= 0)
         {
             int[] move = new int[] {rowScan, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] < 7 && move[1] > 0) captureMap[move[0] + 1][move[1] - 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan++;
             columnScan--;
@@ -337,7 +365,14 @@ public class Board {
         while (rowScan >= 0)
         {
             int[] move = new int[] {rowScan, column};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] > 0) captureMap[move[0] - 1][move[1]].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan--;
         }
@@ -347,7 +382,14 @@ public class Board {
         while (columnScan <= 7)
         {
             int[] move = new int[] {row, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[1] < 7) captureMap[move[0]][move[1] + 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             columnScan++;
         }
@@ -357,7 +399,14 @@ public class Board {
         while (rowScan <= 7)
         {
             int[] move = new int[] {rowScan, column};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[0] < 7) captureMap[move[0] + 1][move[1]].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             rowScan++;
         }
@@ -367,7 +416,14 @@ public class Board {
         while (columnScan >= 0)
         {
             int[] move = new int[] {row, columnScan};
-            if (shouldBreakMoves(moves, move, currPiece)) break;
+            if (shouldBreakMoves(moves, move, currPiece))
+            {
+                if (board[move[0]][move[1]].type == PieceType.KING)
+                {
+                    if (move[1] > 0) captureMap[move[0]][move[1] - 1].pieces.add(currPiece);
+                }
+                break;
+            }
             moves.add(move);
             columnScan--;
         }
