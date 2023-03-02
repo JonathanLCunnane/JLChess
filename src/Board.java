@@ -7,6 +7,7 @@ public class Board {
     Piece[][] board;
     Map<Piece, List<int[]>> possibleMoves = new HashMap<>();
     PieceCollection[][] captureMap = new PieceCollection[8][8];
+    boolean isWhitesMove;
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -20,11 +21,13 @@ public class Board {
     Board(Piece[][] startingBoard)
     {
         board = startingBoard;
+        isWhitesMove = true;
         configureBoard();
     }
     Board()
     {
         board = defaultBoard;
+        isWhitesMove = true;
         configureBoard();
     }
 
@@ -34,6 +37,7 @@ public class Board {
         if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return false;
         if (from == to) return false;
         if (board[from[0]][from[1]].type == PieceType.NONE) return false;
+        if (board[from[0]][from[1]].isWhite != isWhitesMove) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
             // Check for en passant.
@@ -84,6 +88,8 @@ public class Board {
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
+            isWhitesMove = !isWhitesMove;
+
             long start = System.nanoTime();
             configureBoard();
             long end = System.nanoTime();
