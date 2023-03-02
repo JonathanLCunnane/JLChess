@@ -8,6 +8,10 @@ public class Board {
     Map<Piece, List<int[]>> possibleMoves = new HashMap<>();
     PieceCollection[][] captureMap = new PieceCollection[8][8];
     boolean isWhitesMove;
+    boolean singleCheck;
+    boolean doubleCheck;
+    int[] wKingIDXS;
+    int[] bKingIDXS;
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -22,12 +26,18 @@ public class Board {
     {
         board = startingBoard;
         isWhitesMove = true;
+        singleCheck = false;
+        doubleCheck = false;
         configureBoard();
     }
     Board()
     {
         board = defaultBoard;
         isWhitesMove = true;
+        singleCheck = false;
+        doubleCheck = false;
+        wKingIDXS = new int[] {7, 4};
+        bKingIDXS = new int[] {0, 4};
         configureBoard();
     }
 
@@ -73,6 +83,14 @@ public class Board {
             else if (board[from[0]][from[1]].type == PieceType.KING && from[1] - to[1] == -2)
             {
                 // Move king
+                if (board[from[0]][from[1]].isWhite)
+                {
+                    wKingIDXS = new int[] {to[0], to[1]};
+                }
+                else
+                {
+                    bKingIDXS = new int[] {to[0], to[1]};
+                }
                 board[from[0]][from[1]].moveCount++;
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
@@ -84,11 +102,21 @@ public class Board {
             }
             else
             {
+                if (board[from[0]][from[1]].type == PieceType.KING)
+                {
+                    if (board[from[0]][from[1]].isWhite)
+                    {
+                        wKingIDXS = new int[] {to[0], to[1]};
+                    }
+                    else
+                    {
+                        bKingIDXS = new int[] {to[0], to[1]};
+                    }
+                }
                 board[from[0]][from[1]].moveCount++;
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
-            isWhitesMove = !isWhitesMove;
 
             long start = System.nanoTime();
             configureBoard();
@@ -100,6 +128,15 @@ public class Board {
                 count += moves.size();
             }
             System.out.printf("%fms for %d moves \n", ms, count);
+
+            isWhitesMove = !isWhitesMove;
+            int checkNumber = numberOfKingCheckingPieces();
+            if (checkNumber > 0)
+            {
+                if (checkNumber > 1) doubleCheck = true;
+                else singleCheck = true;
+            }
+
             return true;
         }
         return false;
@@ -115,8 +152,6 @@ public class Board {
                 captureMap[row][column] = new PieceCollection();
             }
         }
-        int[] wKingIDXS = new int[] {-1, -1};
-        int[] bKingIDXS = new int[] {-1, -1};
         // Get all piece moves apart from king.
         for (int row = 0; row < board.length; row++)
         {
@@ -126,24 +161,13 @@ public class Board {
                 List<int[]> currPossibleMoves = new ArrayList<>();
                 switch (currPiece.type)
                 {
-                    case PieceType.NONE ->
-                    {}
+                    case PieceType.NONE, PieceType.KING ->
+                    {} // King moves are dealt with later.
                     case PieceType.PAWN -> currPossibleMoves = getPawnMoves(row, column, currPiece);
                     case PieceType.KNIGHT -> currPossibleMoves = getKnightMoves(row, column, currPiece);
                     case PieceType.BISHOP -> currPossibleMoves = getBishopMoves(row, column, currPiece);
                     case PieceType.ROOK -> currPossibleMoves = getRookMoves(row, column, currPiece);
                     case PieceType.QUEEN -> currPossibleMoves = getQueenMoves(row, column, currPiece);
-                    case PieceType.KING ->
-                    {
-                        if (currPiece.isWhite)
-                        {
-                            wKingIDXS = new int[] {row, column};
-                        }
-                        else
-                        {
-                            bKingIDXS = new int[] {row, column};
-                        }
-                    } // King moves are dealt with later.
                 }
                 possibleMoves.put(currPiece, currPossibleMoves);
             }
@@ -248,17 +272,7 @@ public class Board {
 
     private List<int[]> getKnightMoves(int row, int column, Piece currPiece)
     {
-        List<int[]> moves = new ArrayList<>();
-
-        // Get moves.
-        moves.add(new int[] {row + 2, column + 1});
-        moves.add(new int[] {row + 1, column + 2});
-        moves.add(new int[] {row - 1, column + 2});
-        moves.add(new int[] {row - 2, column + 1});
-        moves.add(new int[] {row - 2, column - 1});
-        moves.add(new int[] {row - 1, column - 2});
-        moves.add(new int[] {row + 1, column - 2});
-        moves.add(new int[] {row + 2, column - 1});
+        List<int[]> moves = getUnvalidatedKnightMoves(row, column);
 
         moves.removeIf(move -> {
             if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
@@ -446,6 +460,23 @@ public class Board {
         List<int[]> moves = new ArrayList<>();
         moves.addAll(getBishopMoves(row, column, currPiece));
         moves.addAll(getRookMoves(row, column, currPiece));
+
+        return moves;
+    }
+
+    private List<int[]> getUnvalidatedKnightMoves(int row, int column)
+    {
+        List<int[]> moves = new ArrayList<>();
+
+        // Get moves.
+        moves.add(new int[] {row + 2, column + 1});
+        moves.add(new int[] {row + 1, column + 2});
+        moves.add(new int[] {row - 1, column + 2});
+        moves.add(new int[] {row - 2, column + 1});
+        moves.add(new int[] {row - 2, column - 1});
+        moves.add(new int[] {row - 1, column - 2});
+        moves.add(new int[] {row + 1, column - 2});
+        moves.add(new int[] {row + 2, column - 1});
 
         return moves;
     }
@@ -756,5 +787,178 @@ public class Board {
             return true;
         }
         return false;
+    }
+
+    private int numberOfKingCheckingPieces()
+    {
+        // Send out rays in all directions to check for checks from queens, bishops, and rooks.
+        // Then manually check for knight and pawn checks.
+        Piece king = isWhitesMove ? board[wKingIDXS[0]][wKingIDXS[1]] : board[bKingIDXS[0]][bKingIDXS[1]];
+        int kingRow = isWhitesMove ? wKingIDXS[0] : bKingIDXS[0];
+        int kingColumn = isWhitesMove ? wKingIDXS[1] : bKingIDXS[1];
+
+        int attackerCount = 0;
+
+        int rowScan;
+        int columnScan;
+
+        // Right
+        columnScan = kingColumn + 1;
+        while (columnScan <= 7)
+        {
+            Piece currPiece = board[kingRow][columnScan];
+            if (currPiece.type == PieceType.NONE) { columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Up Right
+        columnScan = kingColumn + 1;
+        rowScan = kingRow - 1;
+        while (columnScan <= 7 && rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Up
+        rowScan = kingRow - 1;
+
+        while (rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][kingColumn];
+            if (currPiece.type == PieceType.NONE) { rowScan--; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Up Left
+        columnScan = kingColumn - 1;
+        rowScan = kingRow - 1;
+        while (columnScan >= 0 && rowScan >= 0)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Left
+        columnScan = kingColumn - 1;
+        while (columnScan >= 0)
+        {
+            Piece currPiece = board[kingRow][columnScan];
+            if (currPiece.type == PieceType.NONE) { columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Down Left
+        columnScan = kingColumn - 1;
+        rowScan = kingRow + 1;
+        while (columnScan >= 0 && rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan--; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Down
+        rowScan = kingRow + 1;
+        while (rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][kingColumn];
+            if (currPiece.type == PieceType.NONE) { rowScan++; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Down Right
+        columnScan = kingColumn + 1;
+        rowScan = kingRow + 1;
+        while (columnScan <= 7 && rowScan <= 7)
+        {
+            Piece currPiece = board[rowScan][columnScan];
+            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan++; continue; }
+            if (currPiece.isWhite == king.isWhite) break;
+            if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
+            {
+                attackerCount++;
+                break;
+            }
+            break;
+        }
+
+        // Check for pawn checks
+        Piece leftPawn;
+        Piece rightPawn;
+        if (isWhitesMove)
+        {
+            leftPawn = board[kingRow - 1][kingColumn - 1];
+            rightPawn = board[kingRow - 1][kingColumn + 1];
+        }
+        else
+        {
+            leftPawn = board[kingRow + 1][kingColumn - 1];
+            rightPawn = board[kingRow + 1][kingColumn + 1];
+        }
+        if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) attackerCount++;
+        if (rightPawn.type == PieceType.PAWN && rightPawn.isWhite != isWhitesMove) attackerCount++;
+
+        // Check for knight checks.
+        List<int[]> knightMoves = getUnvalidatedKnightMoves(kingRow, kingColumn);
+
+        // Get moves.
+        knightMoves.removeIf(move -> {
+            if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
+            Piece comparingPiece = board[move[0]][move[1]];
+            if (comparingPiece.type == PieceType.KNIGHT)
+            {
+                return king.isWhite == comparingPiece.isWhite;
+            }
+            return true;
+        });
+
+        attackerCount += knightMoves.size();
+
+        return attackerCount;
     }
 }
