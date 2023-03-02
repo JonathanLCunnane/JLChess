@@ -192,6 +192,7 @@ public class Board {
                 if (!underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
                 {
                     moves.add(new int[] {row - 1, column - 1});
+                    captureMap[row][column - 1].pieces.add(currPiece);
                 }
             }
             if (column < 7)
@@ -200,6 +201,7 @@ public class Board {
                 if (!underPassantRight.isWhite && underPassantRight.moveCount == 1)
                 {
                     moves.add(new int[] {row - 1, column + 1});
+                    captureMap[row][column + 1].pieces.add(currPiece);
                 }
             }
         }
