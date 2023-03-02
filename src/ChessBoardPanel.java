@@ -143,7 +143,7 @@ public class ChessBoardPanel extends JPanel {
             // Draw move indicator(s)
             Piece currPiece = chessBoard.board[clickIndicatorLocation[0]][clickIndicatorLocation[1]];
             List<int[]> moves = chessBoard.possibleMoves.get(currPiece);
-            g2.setColor(Color.RED);
+            g2.setColor(currPiece.isWhite == chessBoard.isWhitesMove ? Color.RED : Color.LIGHT_GRAY);
             for (int[] move: moves)
             {
                 g2.drawArc(
