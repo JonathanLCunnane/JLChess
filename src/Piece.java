@@ -3,6 +3,15 @@ public class Piece {
     int moveCount;
     int type;
     Character pieceChar;
+
+    Piece(int pieceTypeCopy, boolean whiteCopy, int moveCountCopy, Character pieceCharCopy)
+    {
+        type = pieceTypeCopy;
+        isWhite = whiteCopy;
+        moveCount = moveCountCopy;
+        pieceChar = pieceCharCopy;
+    }
+
     Piece(int pieceType, boolean white)
     {
         isWhite = white;
@@ -20,6 +29,11 @@ public class Piece {
         isWhite = true;
         pieceChar = null;
         moveCount = 0;
+    }
+
+    public Piece copy()
+    {
+        return new Piece(type, isWhite, moveCount, pieceChar);
     }
 
     private void configurePiece()
