@@ -2,9 +2,9 @@ import java.util.*;
 
 public class Minimax {
     private Map.Entry<Piece, int[]> bestMove;
-    private Map.Entry<Piece, int[]> getBestMove(Board board)
+    private Map.Entry<Piece, int[]> getBestMove(Board board, int depth)
     {
-        minimax(board, 3, Float.MIN_VALUE, Float.MAX_VALUE, false);
+        minimax(board, depth, Float.MIN_VALUE, Float.MAX_VALUE, false);
         return bestMove;
     }
     private double minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer)
