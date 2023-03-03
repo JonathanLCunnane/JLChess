@@ -14,6 +14,7 @@ public class Board {
     List<int[]> checkPreventingMoves;
     int[] wKingIDXS;
     int[] bKingIDXS;
+    Board previousBoard;
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -24,11 +25,19 @@ public class Board {
             {new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true), new Piece(PieceType.PAWN, true)},
             {new Piece(PieceType.ROOK, true), new Piece(PieceType.KNIGHT, true), new Piece(PieceType.BISHOP, true), new Piece(PieceType.QUEEN, true), new Piece(PieceType.KING, true), new Piece(PieceType.BISHOP, true), new Piece(PieceType.KNIGHT, true), new Piece(PieceType.ROOK, true)}
     };
-    Board(Piece[][] startingBoard)
+
+    public Board copy()
+    {
+        return this;
+    }
+
+    Board(Piece[][] startingBoard, Map<Piece, List<int[]>> startingPossibleMoves, boolean startingIsWhiteMove, int[] startingWKingIDXS, int[] startingBKingIDXS)
     {
         board = startingBoard;
-        checkMate = false;
-        configureBoard();
+        possibleMoves = startingPossibleMoves;
+        isWhitesMove = startingIsWhiteMove;
+        wKingIDXS = startingWKingIDXS;
+        bKingIDXS = startingBKingIDXS;
     }
     Board()
     {
@@ -48,6 +57,7 @@ public class Board {
         if (board[from[0]][from[1]].isWhite != isWhitesMove) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
+            previousBoard = this.copy();
             // Check for en passant.
             if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
             {
@@ -117,12 +127,6 @@ public class Board {
             }
 
             isWhitesMove = !isWhitesMove;
-            int checkNumber = numberOfKingCheckingPieces();
-            if (checkNumber > 0)
-            {
-                if (checkNumber > 1) doubleCheck = true;
-                else singleCheck = true;
-            }
 
             long start = System.nanoTime();
             configureBoard();
@@ -184,6 +188,17 @@ public class Board {
         removeRemainingIllegalMoves(wKingIDXS[0], wKingIDXS[1]);
         removeRemainingIllegalMoves(bKingIDXS[0], bKingIDXS[1]);
 
+        singleCheck = false;
+        doubleCheck = false;
+        checkMate = false;
+        checkPreventingMoves = new ArrayList<>();
+        int checkNumber = numberOfKingCheckingPieces();
+        if (checkNumber > 0)
+        {
+            if (checkNumber > 1) doubleCheck = true;
+            else singleCheck = true;
+        }
+
         // If the king is in check once, then remove all moves that are not capturing the checking piece, moving the king out of check, or blocking the checking piece.
         if (singleCheck)
         {
@@ -216,12 +231,6 @@ public class Board {
         {
             System.out.println("Checkmate.");
         }
-
-        singleCheck = false;
-        doubleCheck = false;
-        checkMate = false;
-
-        checkPreventingMoves = new ArrayList<>();
 
     }
 
