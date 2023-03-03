@@ -7,7 +7,7 @@ public class Minimax {
         minimax(board, 3, Float.MIN_VALUE, Float.MAX_VALUE, false);
         return bestMove;
     }
-    private float minimax(Board board, int depth, float alpha, float beta, boolean maximisingPlayer)
+    private double minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer)
     {
         if (depth == 0 || board.checkMate)
         {
@@ -15,7 +15,7 @@ public class Minimax {
         }
         if (maximisingPlayer)
         {
-            float maxEval = Float.MIN_VALUE;
+            double maxEval = Float.MIN_VALUE;
             boolean isBreaking = false;
             for (int row = 0; row < board.board.length; row++)
             {
@@ -33,7 +33,7 @@ public class Minimax {
                         Board prevBoard = board.copy();
                         board.tryMove(from, nTo);
 
-                        float childEval = minimax(board, depth - 1, alpha, beta, false);
+                        double childEval = minimax(board, depth - 1, alpha, beta, false);
 
                         board = prevBoard;
                         if (childEval > maxEval)
@@ -54,7 +54,7 @@ public class Minimax {
         }
         else
         {
-            float minEval = Float.MAX_VALUE;
+            double minEval = Float.MAX_VALUE;
             boolean isBreaking = false;
             for (int row = 0; row < board.board.length; row++)
             {
@@ -72,7 +72,7 @@ public class Minimax {
                         Board prevBoard = board.copy();
                         board.tryMove(from, nTo);
 
-                        float childEval = minimax(board, depth - 1, alpha, beta, true);
+                        double childEval = minimax(board, depth - 1, alpha, beta, true);
 
                         board = prevBoard;
                         if (childEval < minEval)
@@ -94,29 +94,29 @@ public class Minimax {
         return 0;
     }
 
-    public static float basicBoardEval(Board board)
+    public static double basicBoardEval(Board board)
     {
         if (board.checkMate)
         {
-             if (board.isWhitesMove) return Float.MAX_VALUE;
-             else return Float.MIN_VALUE;
+             if (board.isWhitesMove) return Double.MIN_VALUE;
+             else return Double.MAX_VALUE;
         }
-        float eval = 0;
-        float multiplier;
+        double eval = 0;
+        double multiplier;
         for(Piece[] row: board.board)
         {
             for(Piece piece: row)
             {
-                if (piece.isWhite) multiplier = 1F;
-                else multiplier = -1F;
+                if (piece.isWhite) multiplier = 1D;
+                else multiplier = -1D;
                 switch (piece.type)
                 {
 
                     case PieceType.PAWN -> eval += multiplier;
-                    case PieceType.KNIGHT -> eval += 3.05F * multiplier;
-                    case PieceType.BISHOP -> eval += 3.33F * multiplier;
-                    case PieceType.ROOK -> eval += 5.63F * multiplier;
-                    case PieceType.QUEEN -> eval += 9.5F * multiplier;
+                    case PieceType.KNIGHT -> eval += 3.05 * multiplier;
+                    case PieceType.BISHOP -> eval += 3.33 * multiplier;
+                    case PieceType.ROOK -> eval += 5.63 * multiplier;
+                    case PieceType.QUEEN -> eval += 9.5 * multiplier;
                 }
             }
         }
