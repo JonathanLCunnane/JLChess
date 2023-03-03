@@ -14,12 +14,14 @@ public class ChessBoardPanel extends JPanel {
     private Integer[] previousClickIndicatorLocation = {null, null};
     boolean captureMapOn = false;
     Board chessBoard;
+    Game chessGame;
     BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
 
-    ChessBoardPanel(Board board)
+    ChessBoardPanel(Game game)
     {
         super();
-        chessBoard = board;
+        chessGame = game;
+        chessBoard = game.board;
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -67,8 +69,12 @@ public class ChessBoardPanel extends JPanel {
                 }
                 if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation))
                 {
-                    boolean moved = board.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
-                    if (moved) clickIndicatorLocation = new Integer[] {null, null};
+                    boolean moved = game.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
+                    if (moved)
+                    {
+                        clickIndicatorLocation = new Integer[] {null, null};
+                        if (game.versusAI) game.doBlacksBestMove();
+                    }
                     if (Objects.equals(clickIndicatorLocation[0], previousClickIndicatorLocation[0]) && Objects.equals(clickIndicatorLocation[1], previousClickIndicatorLocation[1])) clickIndicatorLocation = new Integer[] {null, null};
                     paintComponent(getGraphics());
                     previousClickIndicatorLocation = clickIndicatorLocation.clone();
