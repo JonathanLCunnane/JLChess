@@ -14,7 +14,6 @@ public class Board {
     List<int[]> checkPreventingMoves;
     int[] wKingIDXS;
     int[] bKingIDXS;
-    Board previousBoard;
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -28,16 +27,51 @@ public class Board {
 
     public Board copy()
     {
-        return this;
+        Piece[][] boardCopy = new Piece[8][8];
+        Map<Piece, List<int[]>> possibleMovesCopy = new HashMap<>();
+        PieceCollection[][] captureMapCopy = new PieceCollection[8][8];
+        int[] wKingIDXSCopy = new int[] {wKingIDXS[0], wKingIDXS[1]};
+        int[] bKingIDXSCopy = new int[] {bKingIDXS[0], bKingIDXS[1]};
+
+        for (int row = 0; row < board.length; row++)
+        {
+            for (int column = 0; column < board[row].length; column++)
+            {
+                Piece currPiece = board[row][column].copy();
+                List<int[]> currPossibleMoves = new ArrayList<>();
+
+                boardCopy[row][column] = currPiece;
+
+                for (int[] move: possibleMoves.get(board[row][column]))
+                {
+                    currPossibleMoves.add(new int[] {move[0], move[1]});
+                }
+                possibleMovesCopy.put(currPiece, currPossibleMoves);
+
+                for (int captureRow = 0; captureRow < captureMap.length; captureRow++)
+                {
+                    for (int captureColumn = 0; captureColumn < captureMap[row].length; captureColumn++) {
+                        if (captureMap[captureRow][captureColumn].pieces.contains(board[row][column]))
+                            captureMapCopy[captureRow][captureColumn].pieces.add(currPiece);
+                    }
+                }
+            }
+        }
+
+        return new Board(boardCopy, possibleMovesCopy, captureMapCopy, isWhitesMove, singleCheck, doubleCheck, checkMate, wKingIDXSCopy, bKingIDXSCopy);
     }
 
-    Board(Piece[][] startingBoard, Map<Piece, List<int[]>> startingPossibleMoves, boolean startingIsWhiteMove, int[] startingWKingIDXS, int[] startingBKingIDXS)
+    Board(Piece[][] boardCopy, Map<Piece, List<int[]>> possibleMovesCopy, PieceCollection[][] captureMapCopy, boolean isWhitesMoveCopy, boolean singleCheckCopy, boolean doubleCheckCopy, boolean checkMateCopy, int[] wKingIDXSCopy, int[] bKingIDXSCopy)
     {
-        board = startingBoard;
-        possibleMoves = startingPossibleMoves;
-        isWhitesMove = startingIsWhiteMove;
-        wKingIDXS = startingWKingIDXS;
-        bKingIDXS = startingBKingIDXS;
+        board = boardCopy;
+        possibleMoves = possibleMovesCopy;
+        captureMap = captureMapCopy;
+        isWhitesMove = isWhitesMoveCopy;
+        singleCheck = singleCheckCopy;
+        doubleCheck = doubleCheckCopy;
+        checkMate = checkMateCopy;
+        wKingIDXS = wKingIDXSCopy;
+        bKingIDXS = bKingIDXSCopy;
     }
     Board()
     {
@@ -57,7 +91,6 @@ public class Board {
         if (board[from[0]][from[1]].isWhite != isWhitesMove) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
-            previousBoard = this.copy();
             // Check for en passant.
             if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
             {
