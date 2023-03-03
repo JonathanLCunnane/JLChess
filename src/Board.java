@@ -10,6 +10,8 @@ public class Board {
     boolean isWhitesMove;
     boolean singleCheck;
     boolean doubleCheck;
+    boolean checkMate;
+    List<int[]> checkPreventingMoves;
     int[] wKingIDXS;
     int[] bKingIDXS;
     static Piece[][] defaultBoard = {
@@ -25,17 +27,13 @@ public class Board {
     Board(Piece[][] startingBoard)
     {
         board = startingBoard;
-        isWhitesMove = true;
-        singleCheck = false;
-        doubleCheck = false;
+        checkMate = false;
         configureBoard();
     }
     Board()
     {
         board = defaultBoard;
         isWhitesMove = true;
-        singleCheck = false;
-        doubleCheck = false;
         wKingIDXS = new int[] {7, 4};
         bKingIDXS = new int[] {0, 4};
         configureBoard();
@@ -118,6 +116,14 @@ public class Board {
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
 
+            isWhitesMove = !isWhitesMove;
+            int checkNumber = numberOfKingCheckingPieces();
+            if (checkNumber > 0)
+            {
+                if (checkNumber > 1) doubleCheck = true;
+                else singleCheck = true;
+            }
+
             long start = System.nanoTime();
             configureBoard();
             long end = System.nanoTime();
@@ -128,14 +134,6 @@ public class Board {
                 count += moves.size();
             }
             System.out.printf("%fms for %d moves \n", ms, count);
-
-            isWhitesMove = !isWhitesMove;
-            int checkNumber = numberOfKingCheckingPieces();
-            if (checkNumber > 0)
-            {
-                if (checkNumber > 1) doubleCheck = true;
-                else singleCheck = true;
-            }
 
             return true;
         }
@@ -185,6 +183,46 @@ public class Board {
         // Remove self-'discovered check' moves.
         removeRemainingIllegalMoves(wKingIDXS[0], wKingIDXS[1]);
         removeRemainingIllegalMoves(bKingIDXS[0], bKingIDXS[1]);
+
+        // If the king is in check once, then remove all moves that are not capturing the checking piece, moving the king out of check, or blocking the checking piece.
+        if (singleCheck)
+        {
+            possibleMoves.forEach((key, value) -> {
+                if (key.isWhite != isWhitesMove) return;
+                value.removeIf(move -> (!new ChessList(checkPreventingMoves).contains(move) && key.type != PieceType.KING) );
+            });
+            int possibleMoveCount = 0;
+            for (Map.Entry<Piece, List<int[]>> entry: possibleMoves.entrySet())
+            {
+                if (entry.getKey().isWhite == isWhitesMove) possibleMoveCount += entry.getValue().size();
+            }
+            if (possibleMoveCount == 0) checkMate = true;
+        }
+        // If the king is in check twice, then if the king cannot move it is checkmate no matter what.
+        else if (doubleCheck)
+        {
+            if (isWhitesMove)
+            {
+                if (possibleMoves.get(wKing).size() == 0) checkMate = true;
+            }
+            else
+            {
+                if (possibleMoves.get(bKing).size() == 0) checkMate = true;
+            }
+            possibleMoves.entrySet().forEach(entry -> {if (entry.getKey().isWhite == isWhitesMove) entry.setValue(new ArrayList<>());});
+        }
+
+        if (checkMate)
+        {
+            System.out.println("Checkmate.");
+        }
+
+        singleCheck = false;
+        doubleCheck = false;
+        checkMate = false;
+
+        checkPreventingMoves = new ArrayList<>();
+
     }
 
     private List<int[]> getPawnMoves(int row, int column, Piece currPiece)
@@ -513,17 +551,16 @@ public class Board {
     {
         unvalidatedMoves.removeIf(move -> {
             Piece comparingPiece = board[move[0]][move[1]];
-            // Check if the piece is the opposing colour.
-            if (comparingPiece.type != PieceType.NONE)
-            {
-                return currPiece.isWhite == comparingPiece.isWhite;
-            }
             // Check if moving would put king in check.
             for (Piece canCaptureSquare : captureMap[move[0]][move[1]].pieces)
             {
                 if (canCaptureSquare.isWhite != currPiece.isWhite) return true;
             }
-
+            // Check if the piece is the opposing colour.
+            if (comparingPiece.type != PieceType.NONE)
+            {
+                return currPiece.isWhite == comparingPiece.isWhite;
+            }
             return false;
         });
 
@@ -782,8 +819,8 @@ public class Board {
             if (board[move[0]][move[1]].isWhite != currPiece.isWhite)
             {
                 moves.add(move);
-                captureMap[move[0]][move[1]].pieces.add(currPiece);
             }
+            captureMap[move[0]][move[1]].pieces.add(currPiece);
             return true;
         }
         return false;
@@ -798,20 +835,24 @@ public class Board {
         int kingColumn = isWhitesMove ? wKingIDXS[1] : bKingIDXS[1];
 
         int attackerCount = 0;
+        List<int[]> tempAvoidantMoves;
 
         int rowScan;
         int columnScan;
 
         // Right
         columnScan = kingColumn + 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan <= 7)
         {
             Piece currPiece = board[kingRow][columnScan];
-            if (currPiece.type == PieceType.NONE) { columnScan++; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {kingRow, columnScan}); columnScan++; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {kingRow, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -820,14 +861,17 @@ public class Board {
         // Up Right
         columnScan = kingColumn + 1;
         rowScan = kingRow - 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan <= 7 && rowScan >= 0)
         {
             Piece currPiece = board[rowScan][columnScan];
-            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan++; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, columnScan}); rowScan--; columnScan++; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -835,15 +879,17 @@ public class Board {
 
         // Up
         rowScan = kingRow - 1;
-
+        tempAvoidantMoves = new ArrayList<>();
         while (rowScan >= 0)
         {
             Piece currPiece = board[rowScan][kingColumn];
-            if (currPiece.type == PieceType.NONE) { rowScan--; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, kingColumn}); rowScan--; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, kingColumn});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -852,14 +898,17 @@ public class Board {
         // Up Left
         columnScan = kingColumn - 1;
         rowScan = kingRow - 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan >= 0 && rowScan >= 0)
         {
             Piece currPiece = board[rowScan][columnScan];
-            if (currPiece.type == PieceType.NONE) { rowScan--; columnScan--; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, columnScan}); rowScan--; columnScan--; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -867,14 +916,17 @@ public class Board {
 
         // Left
         columnScan = kingColumn - 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan >= 0)
         {
             Piece currPiece = board[kingRow][columnScan];
-            if (currPiece.type == PieceType.NONE) { columnScan--; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {kingRow, columnScan}); columnScan--; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {kingRow, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -883,14 +935,17 @@ public class Board {
         // Down Left
         columnScan = kingColumn - 1;
         rowScan = kingRow + 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan >= 0 && rowScan <= 7)
         {
             Piece currPiece = board[rowScan][columnScan];
-            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan--; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, columnScan}); rowScan++; columnScan--; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -898,14 +953,17 @@ public class Board {
 
         // Down
         rowScan = kingRow + 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (rowScan <= 7)
         {
             Piece currPiece = board[rowScan][kingColumn];
-            if (currPiece.type == PieceType.NONE) { rowScan++; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, kingColumn}); rowScan++; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.ROOK)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, kingColumn});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
@@ -914,34 +972,40 @@ public class Board {
         // Down Right
         columnScan = kingColumn + 1;
         rowScan = kingRow + 1;
+        tempAvoidantMoves = new ArrayList<>();
         while (columnScan <= 7 && rowScan <= 7)
         {
             Piece currPiece = board[rowScan][columnScan];
-            if (currPiece.type == PieceType.NONE) { rowScan++; columnScan++; continue; }
+            if (currPiece.type == PieceType.NONE) { tempAvoidantMoves.add(new int[] {rowScan, columnScan}); rowScan++; columnScan++; continue; }
             if (currPiece.isWhite == king.isWhite) break;
             if (currPiece.type == PieceType.QUEEN || currPiece.type == PieceType.BISHOP)
             {
                 attackerCount++;
+                tempAvoidantMoves.add(new int[] {rowScan, columnScan});
+                checkPreventingMoves.addAll(tempAvoidantMoves);
                 break;
             }
             break;
         }
 
         // Check for pawn checks
-        Piece leftPawn;
-        Piece rightPawn;
+        int[] leftPawnIDXS;
+        int[] rightPawnIDXS;
+
         if (isWhitesMove)
         {
-            leftPawn = board[kingRow - 1][kingColumn - 1];
-            rightPawn = board[kingRow - 1][kingColumn + 1];
+            leftPawnIDXS = new int[] {kingRow - 1, kingColumn - 1};
+            rightPawnIDXS = new int[] {kingRow - 1, kingColumn + 1};
         }
         else
         {
-            leftPawn = board[kingRow + 1][kingColumn - 1];
-            rightPawn = board[kingRow + 1][kingColumn + 1];
+            leftPawnIDXS = new int[] {kingRow + 1, kingColumn - 1};
+            rightPawnIDXS = new int[] {kingRow + 1, kingColumn + 1};
         }
-        if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) attackerCount++;
-        if (rightPawn.type == PieceType.PAWN && rightPawn.isWhite != isWhitesMove) attackerCount++;
+        Piece leftPawn = board[leftPawnIDXS[0]][leftPawnIDXS[1]];
+        Piece rightPawn = board[rightPawnIDXS[0]][leftPawnIDXS[1]];
+        if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {leftPawnIDXS[0], leftPawnIDXS[1]}); }
+        if (rightPawn.type == PieceType.PAWN && rightPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {rightPawnIDXS[0], rightPawnIDXS[1]}); }
 
         // Check for knight checks.
         List<int[]> knightMoves = getUnvalidatedKnightMoves(kingRow, kingColumn);
@@ -958,6 +1022,7 @@ public class Board {
         });
 
         attackerCount += knightMoves.size();
+        checkPreventingMoves.addAll(knightMoves);
 
         return attackerCount;
     }
