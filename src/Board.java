@@ -1070,23 +1070,27 @@ public class Board {
         }
 
         // Check for pawn checks
-        int[] leftPawnIDXS;
-        int[] rightPawnIDXS;
+        int[] leftPawnIDXS = new int[] {-1, -1};
+        int[] rightPawnIDXS = new int[] {-1, -1};
+        boolean isLeftPawn = true;
+        boolean isRightPawn = true;
 
         if (isWhitesMove)
         {
-            leftPawnIDXS = new int[] {kingRow - 1, kingColumn - 1};
-            rightPawnIDXS = new int[] {kingRow - 1, kingColumn + 1};
+            if (kingRow > 0 && kingColumn > 0) leftPawnIDXS = new int[] {kingRow - 1, kingColumn - 1};
+            else isLeftPawn = false;
+            if (kingRow > 0 && kingColumn < 7) rightPawnIDXS = new int[] {kingRow - 1, kingColumn + 1};
+            else isRightPawn = false;
         }
         else
         {
-            leftPawnIDXS = new int[] {kingRow + 1, kingColumn - 1};
-            rightPawnIDXS = new int[] {kingRow + 1, kingColumn + 1};
+            if (kingRow < 7 && kingColumn > 0) leftPawnIDXS = new int[] {kingRow + 1, kingColumn - 1};
+            else isLeftPawn = false;
+            if (kingRow < 7 && kingColumn < 7) rightPawnIDXS = new int[] {kingRow + 1, kingColumn + 1};
+            else isRightPawn = false;
         }
-        Piece leftPawn = board[leftPawnIDXS[0]][leftPawnIDXS[1]];
-        Piece rightPawn = board[rightPawnIDXS[0]][rightPawnIDXS[1]];
-        if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {leftPawnIDXS[0], leftPawnIDXS[1]}); }
-        if (rightPawn.type == PieceType.PAWN && rightPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {rightPawnIDXS[0], rightPawnIDXS[1]}); }
+        attackerCount = getPawnAttackerCount(attackerCount, leftPawnIDXS, isLeftPawn);
+        attackerCount = getPawnAttackerCount(attackerCount, rightPawnIDXS, isRightPawn);
 
         // Check for knight checks.
         List<int[]> knightMoves = getUnvalidatedKnightMoves(kingRow, kingColumn);
@@ -1105,6 +1109,15 @@ public class Board {
         attackerCount += knightMoves.size();
         checkPreventingMoves.addAll(knightMoves);
 
+        return attackerCount;
+    }
+
+    private int getPawnAttackerCount(int attackerCount, int[] PawnIDXS, boolean isPawn) {
+        if (isPawn)
+        {
+            Piece leftPawn = board[PawnIDXS[0]][PawnIDXS[1]];
+            if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {PawnIDXS[0], PawnIDXS[1]}); }
+        }
         return attackerCount;
     }
 }
