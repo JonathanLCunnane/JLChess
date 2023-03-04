@@ -198,6 +198,25 @@ public class Board {
         return false;
     }
 
+    List<Integer[][]> get_moves()
+    {
+        List<Integer[][]> moves = new ArrayList<>();
+        for (int row = 0; row < board.length; row++)
+        {
+            for (int column = 0; column < board[row].length; column++)
+            {
+                if (board[row][column].isWhite != isWhitesMove) continue;
+                Integer[] currFrom = new Integer[] {row, column};
+                for (int[] to: possibleMoves.get(board[row][column]))
+                {
+                    Integer[] currTo = new Integer[] {to[0], to[1]};
+                    moves.add(new Integer[][] {currFrom, currTo});
+                }
+            }
+        }
+        return moves;
+    }
+
     private void configureBoard()
     {
         // Fill capture map with NULL Pieces
