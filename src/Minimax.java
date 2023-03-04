@@ -20,6 +20,7 @@ public class Minimax {
         if (moves.size() == 0)
         {
             System.out.println(board);
+            return new AbstractMap.SimpleEntry<>(null, 0D);
         }
         Integer[][] bestMove = moves.get(0);
 
@@ -38,6 +39,10 @@ public class Minimax {
                     maxEval = childEval;
                     bestMove = move;
                 }
+
+                if (maxEval >= beta) break;
+
+                alpha = Math.max(alpha, maxEval);
             }
             return new AbstractMap.SimpleEntry<>(bestMove, maxEval);
         }
@@ -56,6 +61,10 @@ public class Minimax {
                     minEval = childEval;
                     bestMove = move;
                 }
+
+                if (minEval <= alpha) break;
+
+                beta = Math.min(beta, minEval);
             }
             return new AbstractMap.SimpleEntry<>(bestMove, minEval);
         }
