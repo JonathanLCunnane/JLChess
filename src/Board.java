@@ -29,7 +29,16 @@ public class Board {
     {
         Piece[][] boardCopy = new Piece[8][8];
         Map<Piece, List<int[]>> possibleMovesCopy = new HashMap<>();
+
         PieceCollection[][] captureMapCopy = new PieceCollection[8][8];
+        for (int row = 0; row < board.length; row++)
+        {
+            for (int column = 0; column < board[row].length; column++)
+            {
+                captureMapCopy[row][column] = new PieceCollection();
+            }
+        }
+
         int[] wKingIDXSCopy = new int[] {wKingIDXS[0], wKingIDXS[1]};
         int[] bKingIDXSCopy = new int[] {bKingIDXS[0], bKingIDXS[1]};
 
@@ -82,7 +91,7 @@ public class Board {
         configureBoard();
     }
 
-    boolean tryMove(Integer[] from, Integer[] to)
+    boolean tryMove(Integer[] from, Integer[] to, boolean debugLog)
     {
         if (from[0] == null || from[1] == null || to[0] == null || to[1] == null) return false;
         if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return false;
@@ -163,18 +172,26 @@ public class Board {
 
             isWhitesMove = !isWhitesMove;
 
-            long start = System.nanoTime();
-            configureBoard();
-            long end = System.nanoTime();
-            float ms = (end - start)/1000000F;
-            double eval = Minimax.basicBoardEval(this);
-            int count = 0;
-
-            for (List<int[]> moves: possibleMoves.values())
+            if (debugLog)
             {
-                count += moves.size();
+                long start = System.nanoTime();
+                configureBoard();
+                long end = System.nanoTime();
+                float ms = (end - start)/1000000F;
+                double eval = Minimax.basicBoardEval(this);
+                int count = 0;
+
+                for (List<int[]> moves: possibleMoves.values())
+                {
+                    count += moves.size();
+                }
+                System.out.printf("%fms for %d moves. EVAL: %f\n", ms, count, eval);
+
             }
-            System.out.printf("%fms for %d moves. EVAL: %f\n", ms, count, eval);
+            else
+            {
+                configureBoard();
+            }
 
             return true;
         }
@@ -264,10 +281,10 @@ public class Board {
             possibleMoves.entrySet().forEach(entry -> {if (entry.getKey().isWhite == isWhitesMove) entry.setValue(new ArrayList<>());});
         }
 
-        if (checkMate)
+        /*if (checkMate)
         {
             System.out.println("Checkmate.");
-        }
+        }*/
 
     }
 
@@ -363,13 +380,12 @@ public class Board {
             Piece comparingPiece = board[move[0]][move[1]];
             if (comparingPiece.type != PieceType.NONE)
             {
+                captureMap[move[0]][move[1]].pieces.add(currPiece);
                 return currPiece.isWhite == comparingPiece.isWhite;
             }
             return false;
         });
 
-        // Add moves to capture map
-        for (int[] move: moves) captureMap[move[0]][move[1]].pieces.add(currPiece);
         return moves;
     }
 
