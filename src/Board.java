@@ -275,7 +275,15 @@ public class Board {
         {
             possibleMoves.forEach((key, value) -> {
                 if (key.isWhite != isWhitesMove) return;
-                value.removeIf(move -> (!new ChessList(checkPreventingMoves).contains(move) && key.type != PieceType.KING) );
+                value.removeIf(move -> (!new ChessList(checkPreventingMoves).contains(move) && key.type != PieceType.KING));
+                value.removeIf(move -> {
+                    if (key.type == PieceType.KING)
+                    {
+                         int[] kingIDXS = isWhitesMove ? wKingIDXS : bKingIDXS;
+                         return move[1] == kingIDXS[1] + 2 || move[1] == kingIDXS[1] - 2;
+                    }
+                    return false;
+                });
             });
             int possibleMoveCount = 0;
             for (Map.Entry<Piece, List<int[]>> entry: possibleMoves.entrySet())
