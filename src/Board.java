@@ -336,10 +336,11 @@ public class Board {
                 captureMap[row - 1][column + 1].pieces.add(currPiece);
             }
             // En passant
+            if (row != 3) return moves;
             if (column > 0)
             {
                 Piece underPassantLeft = board[row][column - 1];
-                if (!underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                if (!underPassantLeft.isWhite && underPassantLeft.type == PieceType.PAWN && underPassantLeft.moveCount == 1)
                 {
                     moves.add(new int[] {row - 1, column - 1});
                     captureMap[row][column - 1].pieces.add(currPiece);
@@ -348,7 +349,7 @@ public class Board {
             if (column < 7)
             {
                 Piece underPassantRight = board[row][column + 1];
-                if (!underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                if (!underPassantRight.isWhite && underPassantRight.type == PieceType.PAWN && underPassantRight.moveCount == 1)
                 {
                     moves.add(new int[] {row - 1, column + 1});
                     captureMap[row][column + 1].pieces.add(currPiece);
@@ -375,10 +376,11 @@ public class Board {
                 captureMap[row + 1][column + 1].pieces.add(currPiece);
             }
             // En passant
+            if (row != 4) return moves;
             if (column > 0)
             {
                 Piece underPassantLeft = board[row][column - 1];
-                if (underPassantLeft.type != PieceType.NONE && underPassantLeft.isWhite && underPassantLeft.moveCount == 1)
+                if (underPassantLeft.isWhite && underPassantLeft.type == PieceType.PAWN && underPassantLeft.moveCount == 1)
                 {
                     moves.add(new int[] {row + 1, column - 1});
                 }
@@ -386,7 +388,7 @@ public class Board {
             if (column < 7)
             {
                 Piece underPassantRight = board[row][column + 1];
-                if (underPassantRight.type != PieceType.NONE && underPassantRight.isWhite && underPassantRight.moveCount == 1)
+                if (underPassantRight.isWhite && underPassantRight.type == PieceType.PAWN && underPassantRight.moveCount == 1)
                 {
                     moves.add(new int[] {row + 1, column + 1});
                 }
