@@ -120,6 +120,7 @@ public class Board {
             else if (board[from[0]][from[1]].type == PieceType.KING && (from[1] - to[1] == 2))
             {
                 // Move king
+                moveKingIDXS(from, to);
                 board[from[0]][from[1]].moveCount++;
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
@@ -133,14 +134,7 @@ public class Board {
             else if (board[from[0]][from[1]].type == PieceType.KING && from[1] - to[1] == -2)
             {
                 // Move king
-                if (board[from[0]][from[1]].isWhite)
-                {
-                    wKingIDXS = new int[] {to[0], to[1]};
-                }
-                else
-                {
-                    bKingIDXS = new int[] {to[0], to[1]};
-                }
+                moveKingIDXS(from, to);
                 board[from[0]][from[1]].moveCount++;
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
@@ -154,14 +148,7 @@ public class Board {
             {
                 if (board[from[0]][from[1]].type == PieceType.KING)
                 {
-                    if (board[from[0]][from[1]].isWhite)
-                    {
-                        wKingIDXS = new int[] {to[0], to[1]};
-                    }
-                    else
-                    {
-                        bKingIDXS = new int[] {to[0], to[1]};
-                    }
+                    moveKingIDXS(from, to);
                 }
                 board[from[0]][from[1]].moveCount++;
                 board[to[0]][to[1]] = board[from[0]][from[1]];
@@ -196,6 +183,17 @@ public class Board {
             return true;
         }
         return false;
+    }
+
+    private void moveKingIDXS(Integer[] from, Integer[] to) {
+        if (board[from[0]][from[1]].isWhite)
+        {
+            wKingIDXS = new int[] {to[0], to[1]};
+        }
+        else
+        {
+            bKingIDXS = new int[] {to[0], to[1]};
+        }
     }
 
     List<Integer[][]> get_moves()
@@ -297,7 +295,7 @@ public class Board {
             {
                 if (possibleMoves.get(bKing).size() == 0) checkMate = true;
             }
-            possibleMoves.entrySet().forEach(entry -> {if (entry.getKey().isWhite == isWhitesMove) entry.setValue(new ArrayList<>());});
+            possibleMoves.entrySet().forEach(entry -> {if (entry.getKey().isWhite == isWhitesMove && entry.getKey().type != PieceType.KING) entry.setValue(new ArrayList<>());});
         }
 
         /*if (checkMate)
@@ -397,9 +395,9 @@ public class Board {
         moves.removeIf(move -> {
             if (move[0] < 0 || move[0] >= 8 || move[1] < 0 || move[1] >= 8) return true;
             Piece comparingPiece = board[move[0]][move[1]];
+            captureMap[move[0]][move[1]].pieces.add(currPiece);
             if (comparingPiece.type != PieceType.NONE)
             {
-                captureMap[move[0]][move[1]].pieces.add(currPiece);
                 return currPiece.isWhite == comparingPiece.isWhite;
             }
             return false;
@@ -686,7 +684,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> move[0] != kingRow);
                 }
@@ -715,7 +713,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != move[1] -  kingColumn);
                 }
@@ -771,7 +769,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != kingColumn - move[1]);
                 }
@@ -798,7 +796,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> move[0] != kingRow);
                 }
@@ -827,7 +825,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != move[1] - kingColumn);
                 }
@@ -883,7 +881,7 @@ public class Board {
             }
             else
             {
-                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove)) {
+                if (possiblePin && new ChessList(possibleMoves.get(currPiece)).contains(possiblePinMove) && currPiece.type != PieceType.PAWN) {
 
                     possibleMoves.get(possiblePinPiece).removeIf(move -> kingRow - move[0] != kingColumn - move[1]);
                 }
