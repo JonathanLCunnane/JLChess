@@ -1,5 +1,3 @@
-import java.util.Map;
-
 public class Game {
     Board board;
     Minimax minimax = new Minimax();
@@ -20,7 +18,7 @@ public class Game {
     public void doBlacksBestMove()
     {
         if (board.isWhitesMove) return;
-        Map.Entry<Integer[], Integer[]> bestMove = minimax.getBestMove(board, 3);
-        boolean move = board.tryMove(bestMove.getKey(), bestMove.getValue(), true);
+        Integer[][] bestMove = minimax.getBestMove(board, 3);
+        boolean move = board.tryMove(bestMove[0], bestMove[1], true);
     }
 }

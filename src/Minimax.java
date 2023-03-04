@@ -1,88 +1,63 @@
 import java.util.*;
 
 public class Minimax {
-    private Map.Entry<Integer[], Integer[]> bestMove;
-    public Map.Entry<Integer[], Integer[]> getBestMove(Board board, int depth)
+    public Integer[][] getBestMove(Board board, int depth)
     {
-        System.out.println(minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false));
-        System.out.printf("from [%d, %d] to [%d, %d]", bestMove.getKey()[0], bestMove.getKey()[1], bestMove.getValue()[0], bestMove.getValue()[1]);
+        Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false);
+        Integer[][] bestMove = minimaxOut.getKey();
+        Double eval = minimaxOut.getValue();
+        System.out.printf("from [%d, %d] to [%d, %d], EVAL: %f\n", bestMove[0][0], bestMove[0][1], bestMove[1][0], bestMove[1][1], eval);
         return bestMove;
     }
-    private double minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer)
+    private Map.Entry<Integer[][], Double> minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer)
     {
         if (depth == 0 || board.checkMate)
         {
-            return basicBoardEval(board);
+            return new AbstractMap.SimpleEntry<>(null, basicBoardEval(board));
         }
+
+        List<Integer[][]> moves = board.get_moves();
+        if (moves.size() == 0)
+        {
+            System.out.println(board);
+        }
+        Integer[][] bestMove = moves.get(0);
+
         if (maximisingPlayer)
         {
             double maxEval = -Float.MAX_VALUE;
-            for (int row = 0; row < board.board.length; row++)
+            for (Integer[][] move: moves)
             {
-                for (int column = 0; column < board.board[row].length; column++)
+                Board prevBoard = board.copy();
+                board.tryMove(move[0], move[1], false);
+                Double childEval = minimax(board, depth - 1, alpha, beta, false).getValue();
+                board = prevBoard;
+
+                if (childEval > maxEval)
                 {
-                    Piece movingPiece = board.board[row][column];
-                    if (movingPiece.type == PieceType.NONE) continue;
-                    if (movingPiece.isWhite) continue;
-                    Integer[] from = new Integer[] {row, column};
-                    for (int[] to: board.possibleMoves.get(movingPiece))
-                    {
-                        Integer[] nTo = new Integer[] {to[0], to[1]};
-                        Board prevBoard = board.copy();
-                        board.tryMove(from, nTo, false);
-
-                        double childEval = minimax(board, depth - 1, alpha, beta, false);
-
-                        board = prevBoard;
-                        if (childEval > maxEval)
-                        {
-                            maxEval = childEval;
-                            bestMove = new AbstractMap.SimpleEntry<>(from, nTo);
-                        }
-                        alpha = Math.max(alpha, childEval);
-                        if (alpha >= beta)
-                        {
-                            return maxEval;
-                        }
-                    }
+                    maxEval = childEval;
+                    bestMove = move;
                 }
             }
-            return maxEval;
+            return new AbstractMap.SimpleEntry<>(bestMove, maxEval);
         }
         else
         {
             double minEval = Float.MAX_VALUE;
-            for (int row = 0; row < board.board.length; row++)
+            for (Integer[][] move: moves)
             {
-                for (int column = 0; column < board.board[row].length; column++)
+                Board prevBoard = board.copy();
+                board.tryMove(move[0], move[1], false);
+                Double childEval = minimax(board, depth - 1, alpha, beta, true).getValue();
+                board = prevBoard;
+
+                if (childEval < minEval)
                 {
-                    Piece movingPiece = board.board[row][column];
-                    if (movingPiece.type == PieceType.NONE) continue;
-                    if (!movingPiece.isWhite) continue;
-                    Integer[] from = new Integer[] {row, column};
-                    for (int[] to: board.possibleMoves.get(movingPiece))
-                    {
-                        Integer[] nTo = new Integer[] {to[0], to[1]};
-                        Board prevBoard = board.copy();
-                        board.tryMove(from, nTo, false);
-
-                        double childEval = minimax(board, depth - 1, alpha, beta, true);
-
-                        board = prevBoard;
-                        if (childEval < minEval)
-                        {
-                            minEval = childEval;
-                            bestMove = new AbstractMap.SimpleEntry<>(from, nTo);
-                        }
-                        beta = Math.min(beta, childEval);
-                        if (beta <= alpha)
-                        {
-                            return minEval;
-                        }
-                    }
+                    minEval = childEval;
+                    bestMove = move;
                 }
             }
-            return minEval;
+            return new AbstractMap.SimpleEntry<>(bestMove, minEval);
         }
     }
 
