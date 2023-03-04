@@ -1065,7 +1065,7 @@ public class Board {
             rightPawnIDXS = new int[] {kingRow + 1, kingColumn + 1};
         }
         Piece leftPawn = board[leftPawnIDXS[0]][leftPawnIDXS[1]];
-        Piece rightPawn = board[rightPawnIDXS[0]][leftPawnIDXS[1]];
+        Piece rightPawn = board[rightPawnIDXS[0]][rightPawnIDXS[1]];
         if (leftPawn.type == PieceType.PAWN && leftPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {leftPawnIDXS[0], leftPawnIDXS[1]}); }
         if (rightPawn.type == PieceType.PAWN && rightPawn.isWhite != isWhitesMove) { attackerCount++; checkPreventingMoves.add(new int[] {rightPawnIDXS[0], rightPawnIDXS[1]}); }
 
