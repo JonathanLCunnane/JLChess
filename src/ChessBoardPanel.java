@@ -172,7 +172,7 @@ public class ChessBoardPanel extends JPanel {
                 if (currPiece.type != PieceType.NONE)
                 {
                     g.drawImage(
-                            PieceImages.getImage(currPiece.pieceChar, currPiece.isWhite),
+                            PieceImages.getImage(currPiece.pieceChar.toString().toUpperCase().toCharArray()[0], currPiece.isWhite),
                             marginSize + extraSideMargin + (column * 64) + 1,
                             marginSize + extraTopMargin + (row * 64) + 1,
                             null
