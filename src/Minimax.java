@@ -103,7 +103,7 @@ public class Minimax {
     {
         if (board.checkMate)
         {
-             if (board.isWhitesMove) return Double.MIN_VALUE;
+             if (board.isWhitesMove) return -Double.MAX_VALUE;
              else return Double.MAX_VALUE;
         }
         double eval = 0;
