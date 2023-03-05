@@ -184,8 +184,7 @@ public class Board {
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
 
-
-
+            hash = hashGen.switchMovingPlayer(hash);
             isWhitesMove = !isWhitesMove;
 
             if (debugLog)
