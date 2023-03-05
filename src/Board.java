@@ -14,6 +14,8 @@ public class Board {
     List<int[]> checkPreventingMoves;
     int[] wKingIDXS;
     int[] bKingIDXS;
+    ZobristHashing hashGen;
+    long hash;
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -67,10 +69,10 @@ public class Board {
             }
         }
 
-        return new Board(boardCopy, possibleMovesCopy, captureMapCopy, isWhitesMove, singleCheck, doubleCheck, checkMate, wKingIDXSCopy, bKingIDXSCopy);
+        return new Board(boardCopy, possibleMovesCopy, captureMapCopy, isWhitesMove, singleCheck, doubleCheck, checkMate, wKingIDXSCopy, bKingIDXSCopy, hashGen, hash);
     }
 
-    Board(Piece[][] boardCopy, Map<Piece, List<int[]>> possibleMovesCopy, PieceCollection[][] captureMapCopy, boolean isWhitesMoveCopy, boolean singleCheckCopy, boolean doubleCheckCopy, boolean checkMateCopy, int[] wKingIDXSCopy, int[] bKingIDXSCopy)
+    Board(Piece[][] boardCopy, Map<Piece, List<int[]>> possibleMovesCopy, PieceCollection[][] captureMapCopy, boolean isWhitesMoveCopy, boolean singleCheckCopy, boolean doubleCheckCopy, boolean checkMateCopy, int[] wKingIDXSCopy, int[] bKingIDXSCopy, ZobristHashing hashGenCopy, long hashCopy)
     {
         board = boardCopy;
         possibleMoves = possibleMovesCopy;
@@ -81,6 +83,8 @@ public class Board {
         checkMate = checkMateCopy;
         wKingIDXS = wKingIDXSCopy;
         bKingIDXS = bKingIDXSCopy;
+        hashGen = hashGenCopy;
+        hash = hashCopy;
     }
     Board()
     {
@@ -88,6 +92,8 @@ public class Board {
         isWhitesMove = true;
         wKingIDXS = new int[] {7, 4};
         bKingIDXS = new int[] {0, 4};
+        hashGen = new ZobristHashing();
+        hash = hashGen.hash(this);
         configureBoard();
     }
 
@@ -103,16 +109,24 @@ public class Board {
             // Check for en passant.
             if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
             {
-                board[from[0]][from[1]].moveCount++;
-                board[to[0]][to[1]] = board[from[0]][from[1]];
+                Piece temp = board[from[0]][from[1]].copy();
+
+                hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
+
+                temp.pieceChar = 'P';
+                board[to[0]][to[1]] = temp;
+                hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
+
                 // En passant-ed piece.
                 if (from[0] == 3) // If white piece is capturing
                 {
+                    hash = hashGen.updateHash(hash, new Integer[] {to[0] + 1, to[1]}, board[to[0] + 1][to[1]]);
                     board[to[0] + 1][to[1]] = new Piece(PieceType.NONE);
                 }
                 else // If black piece is capturing.
                 {
+                    hash = hashGen.updateHash(hash, new Integer[] {to[0] - 1, to[1]}, board[to[0] - 1][to[1]]);
                     board[to[0] - 1][to[1]] = new Piece(PieceType.NONE);
                 }
             }
@@ -121,13 +135,19 @@ public class Board {
             {
                 // Move king
                 moveKingIDXS(from, to);
+                hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]].moveCount++;
+
                 board[to[0]][to[1]] = board[from[0]][from[1]];
+                hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
 
                 // Move rook
+                hash = hashGen.updateHash(hash, new Integer[] {from[0], from[1] - 4}, board[from[0]][from[1] - 4]);
                 board[from[0]][from[1] - 4].moveCount++;
+
                 board[to[0]][to[1] + 1] = board[from[0]][from[1] - 4];
+                hash = hashGen.updateHash(hash, new Integer[] {to[0], to[1] + 1}, board[to[0]][to[1] + 1]);
                 board[from[0]][from[1] - 4] = new Piece(PieceType.NONE);
             }
             // Check for king side castling
@@ -135,13 +155,19 @@ public class Board {
             {
                 // Move king
                 moveKingIDXS(from, to);
+                hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]].moveCount++;
+
                 board[to[0]][to[1]] = board[from[0]][from[1]];
+                hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
 
                 // Move rook
+                hash = hashGen.updateHash(hash, new Integer[] {from[0], from[1] + 3}, board[from[0]][from[1] + 3]);
                 board[from[0]][from[1] + 3].moveCount++;
+
                 board[to[0]][to[1] - 1] = board[from[0]][from[1] + 3];
+                hash = hashGen.updateHash(hash, new Integer[] {to[0], to[1] - 1}, board[to[0]][to[1] - 1]);
                 board[from[0]][from[1] + 3] = new Piece(PieceType.NONE);
             }
             else
@@ -150,8 +176,11 @@ public class Board {
                 {
                     moveKingIDXS(from, to);
                 }
+                hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]].moveCount++;
+
                 board[to[0]][to[1]] = board[from[0]][from[1]];
+                hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
 
@@ -344,6 +373,8 @@ public class Board {
                 {
                     moves.add(new int[] {row - 1, column - 1});
                     captureMap[row][column - 1].pieces.add(currPiece);
+                    underPassantLeft.moveCount++;
+                    currPiece.pieceChar = 'p';
                 }
             }
             if (column < 7)
@@ -353,6 +384,8 @@ public class Board {
                 {
                     moves.add(new int[] {row - 1, column + 1});
                     captureMap[row][column + 1].pieces.add(currPiece);
+                    underPassantRight.moveCount++;
+                    currPiece.pieceChar = 'p';
                 }
             }
         }
@@ -383,6 +416,9 @@ public class Board {
                 if (underPassantLeft.isWhite && underPassantLeft.type == PieceType.PAWN && underPassantLeft.moveCount == 1)
                 {
                     moves.add(new int[] {row + 1, column - 1});
+                    captureMap[row][column - 1].pieces.add(currPiece);
+                    underPassantLeft.moveCount++;
+                    currPiece.pieceChar = 'p';
                 }
             }
             if (column < 7)
@@ -391,6 +427,9 @@ public class Board {
                 if (underPassantRight.isWhite && underPassantRight.type == PieceType.PAWN && underPassantRight.moveCount == 1)
                 {
                     moves.add(new int[] {row + 1, column + 1});
+                    captureMap[row][column + 1].pieces.add(currPiece);
+                    underPassantRight.moveCount++;
+                    currPiece.pieceChar = 'p';
                 }
             }
 
