@@ -27,6 +27,7 @@ public class ZobristHashing {
     {
         // We first need to generate all the random bit strings.
         Random random = new Random();
+        random.setSeed(9810197110115L);
         for (int square = 0; square < 64; square++)
         {
             for (int piece = 0; piece < 18; piece++)
@@ -53,6 +54,11 @@ public class ZobristHashing {
             }
         }
         return hash;
+    }
+
+    long switchMovingPlayer(long hash)
+    {
+        return hash ^ blackToMoveHash;
     }
 
     long updateHash(long prevHash, Integer[] square, Piece piece)
