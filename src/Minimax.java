@@ -1,19 +1,38 @@
 import java.util.*;
 
 public class Minimax {
+    Map<Long, Map.Entry<Integer[][], Double>> hashTable;
+    ZobristHashing hashGen;
+    Minimax()
+    {
+        hashTable = new HashMap<>();
+        hashGen = new ZobristHashing();
+    }
     public Integer[][] getBestMove(Board board, int depth)
     {
-        Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false);
+        hashTable.clear();
+        Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false, null);
         Integer[][] bestMove = minimaxOut.getKey();
         Double eval = minimaxOut.getValue();
         System.out.printf("from [%d, %d] to [%d, %d], EVAL: %f\n", bestMove[0][0], bestMove[0][1], bestMove[1][0], bestMove[1][1], eval);
         return bestMove;
     }
-    private Map.Entry<Integer[][], Double> minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer)
+    private Map.Entry<Integer[][], Double> minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer, Long initialHash)
     {
+        long hash;
+        if (initialHash == null)
+        {
+            hash = hashGen.hash(board);
+        }
+        else hash = initialHash;
+        Map.Entry<Integer[][], Double> minimaxHash = hashTable.get(hash);
         if (depth == 0 || board.checkMate)
         {
             return new AbstractMap.SimpleEntry<>(null, basicBoardEval(board));
+        }
+        else if (minimaxHash != null)
+        {
+            return minimaxHash;
         }
 
         List<Integer[][]> moves = board.get_moves();
@@ -30,8 +49,13 @@ public class Minimax {
             for (Integer[][] move: moves)
             {
                 Board prevBoard = board.copy();
+
                 board.tryMove(move[0], move[1], false);
-                Double childEval = minimax(board, depth - 1, alpha, beta, false).getValue();
+
+                Map.Entry<Integer[][], Double> childMinimax = minimax(board, depth - 1, alpha, beta, false, board.hash);
+                Double childEval = childMinimax.getValue();
+                hashTable.put(board.hash, childMinimax);
+
                 board = prevBoard;
 
                 if (childEval > maxEval)
@@ -52,8 +76,13 @@ public class Minimax {
             for (Integer[][] move: moves)
             {
                 Board prevBoard = board.copy();
+
                 board.tryMove(move[0], move[1], false);
-                Double childEval = minimax(board, depth - 1, alpha, beta, true).getValue();
+
+                Map.Entry<Integer[][], Double> childMinimax = minimax(board, depth - 1, alpha, beta, true, board.hash);
+                Double childEval = childMinimax.getValue();
+                hashTable.put(board.hash, childMinimax);
+
                 board = prevBoard;
 
                 if (childEval < minEval)
