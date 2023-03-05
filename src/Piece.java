@@ -2,7 +2,7 @@ public class Piece {
     boolean isWhite;
     int moveCount;
     int type;
-    Character pieceChar;
+    Character pieceChar; // A piece char of 'p' rather than 'P' is a pawn that can capture en passant.
 
     Piece(int pieceTypeCopy, boolean whiteCopy, int moveCountCopy, Character pieceCharCopy)
     {
