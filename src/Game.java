@@ -18,7 +18,13 @@ public class Game {
     public void doBlacksBestMove()
     {
         if (board.isWhitesMove) return;
-        Integer[][] bestMove = minimax.getBestMove(board, 3);
-        boolean move = board.tryMove(bestMove[0], bestMove[1], true);
+
+        long start = System.nanoTime();
+        Integer[][] bestMove = minimax.getBestMove(board, 6);
+        long end = System.nanoTime();
+        float ms = (end - start)/1000000F;
+        System.out.printf("AI's move took %fms\n", ms);
+
+        board.tryMove(bestMove[0], bestMove[1], true);
     }
 }
