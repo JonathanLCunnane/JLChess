@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Minimax {
-    Map<Long, Map.Entry<Integer[][], Double>> hashTable;
+    Map<Long, Double> hashTable;
     ZobristHashing hashGen;
     Minimax()
     {
@@ -10,7 +10,6 @@ public class Minimax {
     }
     public Integer[][] getBestMove(Board board, int depth)
     {
-        hashTable.clear();
         Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false, null);
         Integer[][] bestMove = minimaxOut.getKey();
         Double eval = minimaxOut.getValue();
@@ -25,14 +24,13 @@ public class Minimax {
             hash = hashGen.hash(board);
         }
         else hash = initialHash;
-        Map.Entry<Integer[][], Double> minimaxHash = hashTable.get(hash);
+        Double minimaxHashEval = hashTable.get(hash);
         if (depth == 0 || board.checkMate)
         {
-            return new AbstractMap.SimpleEntry<>(null, basicBoardEval(board));
-        }
-        else if (minimaxHash != null)
-        {
-            return minimaxHash;
+            if (minimaxHashEval != null) return new AbstractMap.SimpleEntry<>(null, minimaxHashEval);
+            double minimaxEval = basicBoardEval(board);
+            hashTable.put(board.hash, minimaxEval);
+            return new AbstractMap.SimpleEntry<>(null, minimaxEval);
         }
 
         List<Integer[][]> moves = board.get_moves();
@@ -52,9 +50,7 @@ public class Minimax {
 
                 board.tryMove(move[0], move[1], false);
 
-                Map.Entry<Integer[][], Double> childMinimax = minimax(board, depth - 1, alpha, beta, false, board.hash);
-                Double childEval = childMinimax.getValue();
-                hashTable.put(board.hash, childMinimax);
+                Double childEval = minimax(board, depth - 1, alpha, beta, false, board.hash).getValue();
 
                 board = prevBoard;
 
@@ -79,9 +75,7 @@ public class Minimax {
 
                 board.tryMove(move[0], move[1], false);
 
-                Map.Entry<Integer[][], Double> childMinimax = minimax(board, depth - 1, alpha, beta, true, board.hash);
-                Double childEval = childMinimax.getValue();
-                hashTable.put(board.hash, childMinimax);
+                Double childEval = minimax(board, depth - 1, alpha, beta, true, board.hash).getValue();
 
                 board = prevBoard;
 
