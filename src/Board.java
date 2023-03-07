@@ -16,6 +16,7 @@ public class Board {
     ZobristHashing hashGen;
     long hash;
     List<Long> prevHashes = new ArrayList<>();
+    int promotionType;
 
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
@@ -91,6 +92,7 @@ public class Board {
         prevHashes = prevHashesCopy;
         hashGen = hashGenCopy;
         hash = hashCopy;
+        promotionType = PieceType.QUEEN;
     }
     Board()
     {
@@ -100,6 +102,7 @@ public class Board {
         bKingIDXS = new int[] {0, 4};
         hashGen = new ZobristHashing();
         hash = hashGen.hash(this);
+        promotionType = PieceType.QUEEN;
         configureBoard();
     }
 
@@ -112,9 +115,10 @@ public class Board {
         if (board[from[0]][from[1]].isWhite != isWhitesMove) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
-            // Check for en passant.
+
             if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
             {
+                // Check for en passant.
                 Piece temp = board[from[0]][from[1]].copy();
 
                 hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
@@ -135,6 +139,17 @@ public class Board {
                     hash = hashGen.updateHash(hash, new Integer[] {to[0] - 1, to[1]}, board[to[0] - 1][to[1]]);
                     board[to[0] - 1][to[1]] = new Piece(PieceType.NONE);
                 }
+            }
+            // Check for pawn promotion
+            else if (board[from[0]][from[1]].type == PieceType.PAWN && ((board[from[0]][from[1]].isWhite && to[0] == 0) || (!board[from[0]][from[1]].isWhite && to[0] == 7)))
+            {
+                hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
+                board[from[0]][from[1]].moveCount++;
+
+                board[to[0]][to[1]] = board[from[0]][from[1]];
+                board[to[0]][to[1]].promoteTo(promotionType);
+                hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
+                board[from[0]][from[1]] = new Piece(PieceType.NONE);
             }
             // Check for queen side castling
             else if (board[from[0]][from[1]].type == PieceType.KING && (from[1] - to[1] == 2))
@@ -259,6 +274,11 @@ public class Board {
             draw = true;
         }
         return moves;
+    }
+
+    void setPromotionType(int pieceType)
+    {
+        promotionType = pieceType;
     }
 
     private void configureBoard()
