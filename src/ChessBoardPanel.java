@@ -165,7 +165,7 @@ public class ChessBoardPanel extends JPanel {
             Piece currPiece = chessBoard.board[clickIndicatorLocation[0]][clickIndicatorLocation[1]];
             List<int[]> moves = chessBoard.possibleMoves.get(currPiece);
             g2.setColor(currPiece.isWhite == chessBoard.isWhitesMove ? Color.RED : Color.LIGHT_GRAY);
-            for (int[] move: moves)
+            if (moves != null) for (int[] move: moves)
             {
                 g2.drawArc(
                         marginSize + extraSideMargin + 24 + (move[1] * 64),
