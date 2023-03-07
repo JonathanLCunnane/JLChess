@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Board {
     Piece[][] board;
@@ -10,12 +7,16 @@ public class Board {
     boolean isWhitesMove;
     boolean singleCheck;
     boolean doubleCheck;
+    boolean draw;
+    boolean stalemate;
     boolean checkMate;
     List<int[]> checkPreventingMoves;
     int[] wKingIDXS;
     int[] bKingIDXS;
     ZobristHashing hashGen;
     long hash;
+    List<Long> prevHashes = new ArrayList<>();
+
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
             {new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false), new Piece(PieceType.PAWN, false)},
@@ -69,10 +70,12 @@ public class Board {
             }
         }
 
-        return new Board(boardCopy, possibleMovesCopy, captureMapCopy, isWhitesMove, singleCheck, doubleCheck, checkMate, wKingIDXSCopy, bKingIDXSCopy, hashGen, hash);
+        List<Long> prevHashesCopy = new ArrayList<>(prevHashes);
+
+        return new Board(boardCopy, possibleMovesCopy, captureMapCopy, isWhitesMove, singleCheck, doubleCheck, draw, stalemate, checkMate, wKingIDXSCopy, bKingIDXSCopy, prevHashesCopy, hashGen, hash);
     }
 
-    Board(Piece[][] boardCopy, Map<Piece, List<int[]>> possibleMovesCopy, PieceCollection[][] captureMapCopy, boolean isWhitesMoveCopy, boolean singleCheckCopy, boolean doubleCheckCopy, boolean checkMateCopy, int[] wKingIDXSCopy, int[] bKingIDXSCopy, ZobristHashing hashGenCopy, long hashCopy)
+    Board(Piece[][] boardCopy, Map<Piece, List<int[]>> possibleMovesCopy, PieceCollection[][] captureMapCopy, boolean isWhitesMoveCopy, boolean singleCheckCopy, boolean doubleCheckCopy, boolean drawCopy, boolean stalemateCopy, boolean checkMateCopy, int[] wKingIDXSCopy, int[] bKingIDXSCopy, List<Long> prevHashesCopy, ZobristHashing hashGenCopy, long hashCopy)
     {
         board = boardCopy;
         possibleMoves = possibleMovesCopy;
@@ -80,9 +83,12 @@ public class Board {
         isWhitesMove = isWhitesMoveCopy;
         singleCheck = singleCheckCopy;
         doubleCheck = doubleCheckCopy;
+        draw = drawCopy;
+        stalemate = stalemateCopy;
         checkMate = checkMateCopy;
         wKingIDXS = wKingIDXSCopy;
         bKingIDXS = bKingIDXSCopy;
+        prevHashes = prevHashesCopy;
         hashGen = hashGenCopy;
         hash = hashCopy;
     }
@@ -97,7 +103,7 @@ public class Board {
         configureBoard();
     }
 
-    boolean tryMove(Integer[] from, Integer[] to, boolean debugLog)
+    boolean tryMove(Integer[] from, Integer[] to, boolean debugLog, boolean autoConfigure)
     {
         if (from[0] == null || from[1] == null || to[0] == null || to[1] == null) return false;
         if (from[0] < 0 || from[0] >= 8 || from[1] < 0 || from[1] >= 8 || to[0] < 0 || to[0] >= 8 || to[1] < 0 || to[1] >= 8) return false;
@@ -187,10 +193,17 @@ public class Board {
             hash = hashGen.switchMovingPlayer(hash);
             isWhitesMove = !isWhitesMove;
 
+            // Check for repetitions and set previous moves;
+            if (Collections.frequency(prevHashes, hash) == 2)
+            {
+                draw = true;
+            }
+            prevHashes.add(hash);
+
             if (debugLog)
             {
                 long start = System.nanoTime();
-                configureBoard();
+                if (autoConfigure) configureBoard();
                 long end = System.nanoTime();
                 float ms = (end - start)/1000000F;
                 double eval = Minimax.basicBoardEval(this);
@@ -205,7 +218,7 @@ public class Board {
             }
             else
             {
-                configureBoard();
+                if (autoConfigure) configureBoard();
             }
 
             return true;
@@ -240,11 +253,23 @@ public class Board {
                 }
             }
         }
+        if (moves.size() == 0)
+        {
+            stalemate = true;
+            draw = true;
+        }
         return moves;
     }
 
     private void configureBoard()
     {
+        // Check if game has ended
+        if (checkMate || draw || stalemate)
+        {
+            configureGameEnd();
+            return;
+        }
+
         // Fill capture map with NULL Pieces
         for (int row = 0; row < board.length; row++)
         {
@@ -292,6 +317,9 @@ public class Board {
         checkMate = false;
         checkPreventingMoves = new ArrayList<>();
         int checkNumber = numberOfKingCheckingPieces();
+        if (checkPreventingMoves.size() != 0) {
+            System.nanoTime();
+        }
         if (checkNumber > 0)
         {
             if (checkNumber > 1) doubleCheck = true;
@@ -333,12 +361,25 @@ public class Board {
             }
             possibleMoves.entrySet().forEach(entry -> {if (entry.getKey().isWhite == isWhitesMove && entry.getKey().type != PieceType.KING) entry.setValue(new ArrayList<>());});
         }
+    }
 
-        /*if (checkMate)
+    private void configureGameEnd()
+    {
+        if (possibleMoves != null) possibleMoves = new HashMap<>();
+        if (checkPreventingMoves != null) checkPreventingMoves = new ArrayList<>();
+        captureMap = new PieceCollection[8][8];
+        if (checkMate)
         {
             System.out.println("Checkmate.");
-        }*/
-
+        }
+        if (stalemate)
+        {
+            System.out.println("Stalemate.");
+        }
+        if (draw)
+        {
+            System.out.println("Draw.");
+        }
     }
 
     private List<int[]> getPawnMoves(int row, int column, Piece currPiece)
