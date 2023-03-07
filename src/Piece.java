@@ -36,6 +36,21 @@ public class Piece {
         return new Piece(type, isWhite, moveCount, pieceChar);
     }
 
+    public void promoteTo(int pieceType)
+    {
+        pieceChar = switch (pieceType)
+        {
+            case PieceType.PAWN -> 'P';
+            case PieceType.KNIGHT -> 'N';
+            case PieceType.BISHOP -> 'B';
+            case PieceType.ROOK -> 'R';
+            case PieceType.QUEEN -> 'Q';
+            case PieceType.KING -> 'K';
+            default -> pieceChar;
+        };
+        type = pieceType;
+    }
+
     private void configurePiece()
     {
         switch (type)
