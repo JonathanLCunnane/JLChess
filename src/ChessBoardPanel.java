@@ -13,6 +13,7 @@ public class ChessBoardPanel extends JPanel {
     private Integer[] clickIndicatorLocation = {null, null};
     private Integer[] previousClickIndicatorLocation = {null, null};
     boolean captureMapOn = false;
+    boolean moveIndicator = false;
     Board chessBoard;
     Game chessGame;
     BufferedImage boardImage = ImageGetter.tryGetImage("/img/board.png", getClass());
@@ -70,12 +71,23 @@ public class ChessBoardPanel extends JPanel {
                 if (Arrays.equals(clickIndicatorLocation, newClickIndicatorLocation))
                 {
                     boolean moved = game.tryMove(previousClickIndicatorLocation, clickIndicatorLocation);
-                    if (moved) clickIndicatorLocation = new Integer[] {null, null};
+                    if (moved) moveIndicator = true;
                     if (Objects.equals(clickIndicatorLocation[0], previousClickIndicatorLocation[0]) && Objects.equals(clickIndicatorLocation[1], previousClickIndicatorLocation[1])) clickIndicatorLocation = new Integer[] {null, null};
+
                     paintComponent(getGraphics());
-                    if (moved && game.versusAI) game.doBlacksBestMove();
+                    Integer[][] AIMove = null;
+                    if (moved && game.versusAI) {
+                        AIMove = game.doBlacksBestMove();
+                        if (AIMove != null)
+                        {
+                            previousClickIndicatorLocation = AIMove[0];
+                            clickIndicatorLocation = AIMove[1];
+                        }
+                    }
+                    paintComponent(getGraphics());
                     previousClickIndicatorLocation = clickIndicatorLocation.clone();
-                    paintComponent(getGraphics());
+                    if (moved || AIMove != null) clickIndicatorLocation = new Integer[]{null, null};
+                    moveIndicator = false;
                 }
             }
 
@@ -115,6 +127,13 @@ public class ChessBoardPanel extends JPanel {
 
         g.drawImage(boardImage, marginSize + extraSideMargin, marginSize + extraTopMargin, null);
 
+
+        // Draw move indicator
+        if (moveIndicator && (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null && previousClickIndicatorLocation[0] != null && previousClickIndicatorLocation[1] != null))
+        {
+            drawMoveIndicator(g, previousClickIndicatorLocation, clickIndicatorLocation);
+        }
+
         // Draw pieces
         if (chessBoard != null)
         {
@@ -127,9 +146,7 @@ public class ChessBoardPanel extends JPanel {
             }
         }
 
-
-
-        if (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null)
+        if (clickIndicatorLocation[0] != null && clickIndicatorLocation[1] != null && !moveIndicator)
         {
             // Draw click indicator
             Graphics2D g2 = (Graphics2D) g;
@@ -160,6 +177,7 @@ public class ChessBoardPanel extends JPanel {
                 );
             }
         }
+
     }
 
     private void drawPieces(Graphics g, int extraSideMargin, int extraTopMargin)
@@ -224,5 +242,29 @@ public class ChessBoardPanel extends JPanel {
                 );
             }
         }
+    }
+
+    private void drawMoveIndicator(Graphics g, Integer[] from, Integer[] to)
+    {
+        int extraTopMargin = (getHeight() - boardSize - (marginSize * 2))/2;
+        int extraSideMargin = (getWidth() - boardSize - (marginSize * 2))/2;
+        extraTopMargin = Math.max(extraTopMargin, 0);
+        extraSideMargin = Math.max(extraSideMargin, 0);
+
+        Color moveColour = Color.RED;
+        moveColour = new Color(moveColour.getRed()/255F, moveColour.getGreen()/255F, moveColour.getBlue()/255F, 0.2F);
+        g.setColor(moveColour);
+        g.fillRect(
+                marginSize + extraSideMargin + (from[1] * 64),
+                marginSize + extraTopMargin + (from[0] * 64),
+                64,
+                64
+        );
+        g.fillRect(
+                marginSize + extraSideMargin + (to[1] * 64),
+                marginSize + extraTopMargin + (to[0] * 64),
+                64,
+                64
+        );
     }
 }
