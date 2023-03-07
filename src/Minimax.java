@@ -25,7 +25,9 @@ public class Minimax {
         }
         else hash = initialHash;
         Double minimaxHashEval = hashTable.get(hash);
-        if (depth == 0 || board.checkMate)
+        List<Integer[][]> moves = new ArrayList<>();
+        if (!(board.draw || board.stalemate)) moves = board.get_moves();
+        if (depth == 0 || board.checkMate || board.draw || board.stalemate)
         {
             if (minimaxHashEval != null) return new AbstractMap.SimpleEntry<>(null, minimaxHashEval);
             double minimaxEval = basicBoardEval(board);
@@ -33,7 +35,6 @@ public class Minimax {
             return new AbstractMap.SimpleEntry<>(null, minimaxEval);
         }
 
-        List<Integer[][]> moves = board.get_moves();
         if (moves.size() == 0)
         {
             System.out.println(board);
@@ -48,7 +49,8 @@ public class Minimax {
             {
                 Board prevBoard = board.copy();
 
-                board.tryMove(move[0], move[1], false);
+                // We do not need to generate all the next moves for leaves.
+                board.tryMove(move[0], move[1], false, depth > 1);
 
                 Double childEval = minimax(board, depth - 1, alpha, beta, false, board.hash).getValue();
 
@@ -73,7 +75,8 @@ public class Minimax {
             {
                 Board prevBoard = board.copy();
 
-                board.tryMove(move[0], move[1], false);
+                // We do not need to generate all the next moves for leaves.
+                board.tryMove(move[0], move[1], false, depth > 1);
 
                 Double childEval = minimax(board, depth - 1, alpha, beta, true, board.hash).getValue();
 
@@ -99,6 +102,10 @@ public class Minimax {
         {
              if (board.isWhitesMove) return -Double.MAX_VALUE;
              else return Double.MAX_VALUE;
+        }
+        if (board.draw || board.stalemate)
+        {
+            return 0;
         }
         double eval = 0;
         double multiplier;
