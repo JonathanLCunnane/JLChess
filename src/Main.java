@@ -21,11 +21,16 @@ public class Main {
 
         // Setup menu bar
         JMenuBar menuBar = new JMenuBar();
+        ChessActionListener listener = new ChessActionListener(panel, board);
 
         JButton toggleCaptureMapButton = new JButton("Show Capture Map");
-        toggleCaptureMapButton.addActionListener(new ChessActionListener(panel));
+        toggleCaptureMapButton.addActionListener(listener);
+
+        JButton cyclePromotionPieceButton = new JButton("Pawn Promotes to: Queen");
+        cyclePromotionPieceButton.addActionListener(listener);
 
         menuBar.add(toggleCaptureMapButton);
+        menuBar.add(cyclePromotionPieceButton);
         frame.setJMenuBar(menuBar);
 
         // Show frame
