@@ -17,6 +17,7 @@ public class Board {
     long hash;
     List<Long> prevHashes = new ArrayList<>();
     int promotionType;
+    boolean lastMoveWasCapture;
 
     static Piece[][] defaultBoard = {
             {new Piece(PieceType.ROOK, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.QUEEN, false), new Piece(PieceType.KING, false), new Piece(PieceType.BISHOP, false), new Piece(PieceType.KNIGHT, false), new Piece(PieceType.ROOK, false)},
@@ -115,7 +116,7 @@ public class Board {
         if (board[from[0]][from[1]].isWhite != isWhitesMove) return false;
         if (new ChessList(possibleMoves.get(board[from[0]][from[1]])).contains(new int[] {to[0], to[1]}))
         {
-
+            lastMoveWasCapture = false;
             if (board[from[0]][from[1]].type == PieceType.PAWN && board[to[0]][to[1]].type == PieceType.NONE && !from[1].equals(to[1]))
             {
                 // Check for en passant.
@@ -146,6 +147,11 @@ public class Board {
                 hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]].moveCount++;
 
+                if (board[to[0]][to[1]].type != PieceType.NONE)
+                {
+                    hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
+                    lastMoveWasCapture = true;
+                }
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 board[to[0]][to[1]].promoteTo(promotionType);
                 hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
@@ -200,6 +206,11 @@ public class Board {
                 hash = hashGen.updateHash(hash, from, board[from[0]][from[1]]);
                 board[from[0]][from[1]].moveCount++;
 
+                if (board[to[0]][to[1]].type != PieceType.NONE)
+                {
+                    hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
+                    lastMoveWasCapture = true;
+                }
                 board[to[0]][to[1]] = board[from[0]][from[1]];
                 hash = hashGen.updateHash(hash, to, board[to[0]][to[1]]);
                 board[from[0]][from[1]] = new Piece(PieceType.NONE);
@@ -259,6 +270,7 @@ public class Board {
         {
             for (int column = 0; column < board[row].length; column++)
             {
+                if (board[row][column].type == PieceType.NONE) continue;
                 if (board[row][column].isWhite != isWhitesMove) continue;
                 Integer[] currFrom = new Integer[] {row, column};
                 for (int[] to: possibleMoves.get(board[row][column]))
