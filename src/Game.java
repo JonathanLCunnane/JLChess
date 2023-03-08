@@ -1,6 +1,6 @@
 public class Game {
     Board board;
-    Minimax minimax = new Minimax(4);
+    Minimax minimax = new Minimax();
     boolean versusAI;
     public Game(boolean isVersusAI, Board gameBoard)
     {
@@ -15,15 +15,22 @@ public class Game {
         return board.tryMove(from, to, true, true);
     }
 
-    public Integer[][] doBlacksBestMove()
+    public Integer[][] doBlacksBestMove(int msForMove)
     {
         if (board.isWhitesMove) return null;
 
+        int depth = 1;
         long start = System.nanoTime();
-        Integer[][] bestMove = minimax.getBestMove(board);
-        long end = System.nanoTime();
-        float ms = (end - start)/1000000F;
-        System.out.printf("AI's move took %fms\n", ms);
+        long elapsedMS;
+        Integer[][] bestMove;
+        do
+        {
+            depth++;
+            bestMove = minimax.getBestMove(board, depth);
+            elapsedMS = (System.nanoTime() - start) / 1000000;
+        } while (elapsedMS <= msForMove);
+        elapsedMS = (System.nanoTime() - start) / 1000000;
+        System.out.printf("AI's move took %dms for a total depth of %d\n", elapsedMS, depth);
 
         boolean move = board.tryMove(bestMove[0], bestMove[1], true, true);
         if (move) return bestMove;

@@ -3,19 +3,16 @@ import java.util.*;
 public class Minimax {
     Map<Long, Double> hashTable;
     ZobristHashing hashGen;
-    final int DEPTH;
-    Minimax(int depth)
+    Minimax()
     {
-        DEPTH = depth;
         hashTable = new HashMap<>();
         hashGen = new ZobristHashing();
     }
-    public Integer[][] getBestMove(Board board)
+    public Integer[][] getBestMove(Board board, int depth)
     {
-        Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), DEPTH, -Float.MAX_VALUE, Float.MAX_VALUE, false, null, 0);
+        Map.Entry<Integer[][], Double> minimaxOut = minimax(board.copy(), depth, -Float.MAX_VALUE, Float.MAX_VALUE, false, null, 0);
         Integer[][] bestMove = minimaxOut.getKey();
         Double eval = minimaxOut.getValue();
-        System.out.printf("from [%d, %d] to [%d, %d], EVAL: %f\n", bestMove[0][0], bestMove[0][1], bestMove[1][0], bestMove[1][1], eval);
         return bestMove;
     }
     private Map.Entry<Integer[][], Double> minimax(Board board, int depth, double alpha, double beta, boolean maximisingPlayer, Long initialHash, int addedDepth)
@@ -54,7 +51,7 @@ public class Minimax {
                 // We do not need to generate all the next moves for leaves.
                 board.tryMove(move[0], move[1], false, true);
                 Double childEval;
-                if (board.lastMoveWasCapture && addedDepth <= DEPTH) // Evaluate more moves after piece get traded.
+                if (board.lastMoveWasCapture && addedDepth <= 0) // Evaluate more moves after piece get traded.
                 {
                     childEval = minimax(board, depth, alpha, beta, false, board.hash, addedDepth + 1).getValue();
                 }
@@ -87,7 +84,7 @@ public class Minimax {
                 // We do not need to generate all the next moves for leaves.
                 board.tryMove(move[0], move[1], false, true);
                 Double childEval;
-                if (board.lastMoveWasCapture && addedDepth <= DEPTH) // Evaluate more moves after a piece gets traded.
+                if (board.lastMoveWasCapture && addedDepth <= 0) // Evaluate more moves after a piece gets traded.
                 {
                     childEval = minimax(board, depth, alpha, beta, true, board.hash, addedDepth + 1).getValue();
                 }

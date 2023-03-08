@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Added functionality to show the capture map.">
+    <list default="true" id="f6aaa6e7-bc62-4464-a1c0-8fd7589a4200" name="Changes" comment="Fixed hashing and get_moves throwing a null pointer exception.">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ChessBoardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChessBoardPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Minimax.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Minimax.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,27 +44,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/Jonathan/OneDrive/IdeaProjects/JLChess",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "editor.preferences.import",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Jonathan/OneDrive/IdeaProjects/JLChess&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.import&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\jonat\OneDrive\IdeaProjects\JLChess\src\img" />
-      <recent name="C:\Users\jonat\OneDrive\IdeaProjects\JLChess\src" />
-    </key>
+}</component>
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="JLChess" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+        <item itemvalue="Application.Main (1)" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -73,168 +92,456 @@
       <workItem from="1677182030613" duration="8433000" />
       <workItem from="1677238085693" duration="395000" />
       <workItem from="1677238503889" duration="1481000" />
+      <workItem from="1677487483838" duration="11335000" />
     </task>
-    <task id="LOCAL-00001" summary="Project Created.">
-      <created>1677182122415</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1677182122415</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Board added.">
-      <created>1677190361281</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1677190361281</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Added workspace.xml to gitignore.">
-      <created>1677190621311</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1677190621311</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Added a click indicator to indicate the currently selected cell.">
-      <created>1677252460346</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1677252460346</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Added a skeleton for the piece and board.">
-      <created>1677326703062</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1677326703062</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Added piece PNGs.">
-      <created>1677329546527</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1677329546527</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Added a piecePNG instance variable to the Piece class.">
-      <created>1677329591070</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1677329591070</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Moved the image getter method from ChessBoardPanel to a new ImageGetter class.">
-      <created>1677329842490</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1677329842490</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Added functionality to draw pieces onto the panel.">
-      <created>1677329926586</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1677329926586</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Added a moveCount variable intended for use in castling and en passant.">
-      <created>1677348798140</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1677348798140</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Added move indicators to the paintComponent function.">
-      <created>1677348835869</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1677348835869</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Added valid move generation for Pawns and Knights, as well as created a capture map to be used for evaluating checks and king moves.">
-      <created>1677349285410</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1677349285410</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Improved piece selection.">
-      <created>1677349575662</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1677349575663</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Added a show capture map button to the menu bar.">
-      <created>1677352597824</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1677352597824</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Added a show capture map button to the menu bar.">
-      <created>1677352617639</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1677352617639</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Added an action listener for the application.">
-      <created>1677352650156</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1677352650156</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Fixed capture map additions.">
-      <created>1677352699470</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1677352699470</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Added functionality to show the capture map.">
-      <created>1677352724500</created>
+    <task id="LOCAL-00018" summary="Added alternate move functionality.">
+      <created>1677771205258</created>
       <option name="number" value="00018" />
       <option name="presentableId" value="LOCAL-00018" />
       <option name="project" value="LOCAL" />
-      <updated>1677352724500</updated>
+      <updated>1677771205258</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Added grey move indicators if it is not that piece's turn.">
+      <created>1677771798457</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1677771798457</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Fixed capture map for en-passant.">
+      <created>1677772348419</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1677772348419</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Detecting single and double checks implemented.">
+      <created>1677776668928</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1677776668928</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Moved piece image fetching to a separate class to reduce space taken up by each Piece instance.">
+      <created>1677834095924</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1677834095924</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Changed how the pieces are drawn using the new PieceImages class.">
+      <created>1677839724484</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1677839724484</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Moved around check 'checking'.">
+      <created>1677845855860</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1677845855860</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Added Piece copy functionality.">
+      <created>1677855990244</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1677855990244</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Implemented Board copy functionality.">
+      <created>1677858757284</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1677858757285</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Created first minimax implementation (UNTESTED).">
+      <created>1677858780637</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1677858780637</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Added a function to print a basic eval after each move.">
+      <created>1677859593551</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1677859593551</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Modified basic board eval.">
+      <created>1677859616326</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1677859616326</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Added variant depth.">
+      <created>1677860099004</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1677860099004</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Implemented vs AI.">
+      <created>1677869299882</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1677869299882</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Changed ChessBoardPanel to work with Game rather than Board.">
+      <created>1677869331152</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1677869331152</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Integrated game class into app.">
+      <created>1677869374496</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1677869374496</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Fixed board copy.">
+      <created>1677932475852</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1677932475852</updated>
+    </task>
+    <task id="LOCAL-00035" summary="First minimax implementation">
+      <created>1677932492174</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1677932492174</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Fixed moves generated to get out of pawn checks.">
+      <created>1677933361537</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1677933361537</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Added useful get moves function.">
+      <created>1677936406809</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1677936406809</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Began re-engineering the minimax function.">
+      <created>1677937703420</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1677937703420</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Fixed pawn checking">
+      <created>1677938010933</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1677938010933</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Fixed knight capture map and pawn pinning pieces accidentally.">
+      <created>1677944181161</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1677944181161</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Changed draw order so the board does not hang when the AI is making its move.">
+      <created>1677944902065</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1677944902065</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Fixed castling while in direct check">
+      <created>1677945564695</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1677945564695</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Implemented alpha-beta pruning.">
+      <created>1677957425443</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1677957425443</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Fixed en-passant.">
+      <created>1677959470027</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1677959470027</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Created a class for Zobrist hashing.">
+      <created>1677978898065</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1677978898065</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Implemented Zobrist hashing within the minimax algorithm.">
+      <created>1677979008281</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1677979008281</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Added additional comment.">
+      <created>1677979024095</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1677979024095</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Added board hash and its relevant updates.">
+      <created>1677979041785</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1677979041785</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Added the time it takes for the AI to move to the log.">
+      <created>1677979060894</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1677979060894</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Fixed an error that did not make checkmate desirable for black.">
+      <created>1678018327186</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1678018327186</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Fixed hashing to some degree. (In the process of creating a function to manually check the equality of two boards to see if hashing is actually fixed.)">
+      <created>1678018618175</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1678018618175</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Added a method to update a hash if the player's turn has switched. Changed the random seed.">
+      <created>1678020052357</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1678020052357</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Fixed a bug which made pawns that could capture en-passant at some point invisible.">
+      <created>1678031021720</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1678031021720</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Fixed hashing.">
+      <created>1678065200602</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1678065200602</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Added move indicators.">
+      <created>1678225687422</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1678225687422</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Altered the Game class to permit move indicators.">
+      <created>1678225748920</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1678225748920</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Fixed an error due to there being no possible moves after there is a draw.">
+      <created>1678226932489</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1678226932489</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Fixed null pointer exception.">
+      <created>1678228608825</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1678228608825</updated>
+    </task>
+    <task id="LOCAL-00059" summary="Added drawing to the minimax function and considered it in the basic evaluation function.">
+      <created>1678228637270</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1678228637270</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Added draw detection.">
+      <created>1678228665808</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1678228665808</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Added pawn promotion.">
+      <created>1678231949517</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1678231949517</updated>
+    </task>
+    <task id="LOCAL-00062" summary="Added functionality for pawn promotion.">
+      <created>1678231963332</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1678231963332</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Added a pseudo-quiescence search.">
+      <created>1678234217307</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1678234217307</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Added pawn promotion toggle button.">
+      <created>1678234272936</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1678234272936</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Updated for new minimax version.">
+      <created>1678234328584</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1678234328584</updated>
+    </task>
+    <task id="LOCAL-00066" summary="Fixed hashing and get_moves throwing a null pointer exception.">
+      <created>1678234428589</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1678234428589</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Project Created." />
-    <MESSAGE value="Board added." />
-    <MESSAGE value="Added workspace.xml to gitignore." />
-    <MESSAGE value="Added a click indicator to indicate the currently selected cell." />
-    <MESSAGE value="Added a skeleton for the piece and board." />
-    <MESSAGE value="Added piece PNGs." />
-    <MESSAGE value="Added a piecePNG instance variable to the Piece class." />
-    <MESSAGE value="Moved the image getter method from ChessBoardPanel to a new ImageGetter class." />
-    <MESSAGE value="Added functionality to draw pieces onto the panel." />
-    <MESSAGE value="Added a moveCount variable intended for use in castling and en passant." />
-    <MESSAGE value="Added move indicators to the paintComponent function." />
-    <MESSAGE value="Added valid move generation for Pawns and Knights, as well as created a capture map to be used for evaluating checks and king moves." />
-    <MESSAGE value="Improved piece selection." />
-    <MESSAGE value="Added a show capture map button to the menu bar." />
-    <MESSAGE value="Added an action listener for the application." />
-    <MESSAGE value="Fixed capture map additions." />
-    <MESSAGE value="Added functionality to show the capture map." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added functionality to show the capture map." />
+    <MESSAGE value="Implemented alpha-beta pruning." />
+    <MESSAGE value="Fixed en-passant." />
+    <MESSAGE value="Created a class for Zobrist hashing." />
+    <MESSAGE value="Implemented Zobrist hashing within the minimax algorithm." />
+    <MESSAGE value="Added additional comment." />
+    <MESSAGE value="Added board hash and its relevant updates." />
+    <MESSAGE value="Added the time it takes for the AI to move to the log." />
+    <MESSAGE value="Fixed an error that did not make checkmate desirable for black." />
+    <MESSAGE value="Fixed hashing to some degree. (In the process of creating a function to manually check the equality of two boards to see if hashing is actually fixed.)" />
+    <MESSAGE value="Added a method to update a hash if the player's turn has switched. Changed the random seed." />
+    <MESSAGE value="Fixed a bug which made pawns that could capture en-passant at some point invisible." />
+    <MESSAGE value="Fixed hashing." />
+    <MESSAGE value="Added move indicators." />
+    <MESSAGE value="Altered the Game class to permit move indicators." />
+    <MESSAGE value="Fixed an error due to there being no possible moves after there is a draw." />
+    <MESSAGE value="Implemented draw and stalemate detection." />
+    <MESSAGE value="Fixed null pointer exception." />
+    <MESSAGE value="Added drawing to the minimax function and considered it in the basic evaluation function." />
+    <MESSAGE value="Added draw detection." />
+    <MESSAGE value="Added pawn promotion." />
+    <MESSAGE value="Added functionality for pawn promotion." />
+    <MESSAGE value="Added a pseudo-quiescence search." />
+    <MESSAGE value="Added pawn promotion toggle button." />
+    <MESSAGE value="Updated for new minimax version." />
+    <MESSAGE value="Fixed hashing and get_moves throwing a null pointer exception." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed hashing and get_moves throwing a null pointer exception." />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1062</line>
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1080</line>
+          <option name="timeStamp" value="114" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1099</line>
+          <option name="timeStamp" value="115" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1117</line>
+          <option name="timeStamp" value="116" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1136</line>
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1154</line>
+          <option name="timeStamp" value="118" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Board.java</url>
+          <line>1173</line>
+          <option name="timeStamp" value="119" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Minimax.java</url>
+          <line>120</line>
+          <option name="timeStamp" value="265" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="266" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="java.lang.NullPointerException" memberName="stackTrace" />
+      </pinned-members>
+    </pin-to-top-manager>
     <watches-manager>
-      <configuration name="ProcessAttachRunConfigurationType">
-        <watch expression="possibleMoves" />
-      </configuration>
       <configuration name="Application">
-        <watch expression="captureMap" />
-        <watch expression="chessBoard" />
+        <watch expression="board" />
+        <watch expression="board.checkPreventingMoves" />
+        <watch expression="boardHashTable" />
       </configuration>
     </watches-manager>
   </component>

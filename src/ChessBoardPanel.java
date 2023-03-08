@@ -77,7 +77,7 @@ public class ChessBoardPanel extends JPanel {
                     paintComponent(getGraphics());
                     Integer[][] AIMove = null;
                     if (moved && game.versusAI) {
-                        AIMove = game.doBlacksBestMove();
+                        AIMove = game.doBlacksBestMove(5000);
                         if (AIMove != null)
                         {
                             previousClickIndicatorLocation = AIMove[0];
