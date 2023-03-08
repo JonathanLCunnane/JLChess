@@ -1,6 +1,6 @@
 public class Game {
     Board board;
-    Minimax minimax = new Minimax();
+    Minimax minimax = new Minimax(4);
     boolean versusAI;
     public Game(boolean isVersusAI, Board gameBoard)
     {
@@ -20,7 +20,7 @@ public class Game {
         if (board.isWhitesMove) return null;
 
         long start = System.nanoTime();
-        Integer[][] bestMove = minimax.getBestMove(board, 4);
+        Integer[][] bestMove = minimax.getBestMove(board);
         long end = System.nanoTime();
         float ms = (end - start)/1000000F;
         System.out.printf("AI's move took %fms\n", ms);
